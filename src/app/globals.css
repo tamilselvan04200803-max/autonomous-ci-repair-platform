@@ -1,0 +1,281 @@
+@import "tailwindcss";
+
+@theme {
+  /* Surface — archival report paper */
+  --color-paper: #f2ede3;
+  --color-paper-2: #e8e1d3;
+  --color-paper-3: #dcd3c1;
+
+  /* Printing ink */
+  --color-ink: #16181c;
+  --color-ink-soft: #3a3d44;
+
+  /* Anchor — dossier navy */
+  --color-navy: #1b3a5c;
+  --color-navy-light: #3e6791;
+  --color-navy-dark: #0f2438;
+
+  /* Tinted neutral — warm stone (darkened for legibility on paper) */
+  --color-stone: #635c4f;
+  --color-stone-light: #8c8474;
+
+  /* Safety-documentation semantics */
+  --color-oxide: #b23a1e;
+  --color-certified: #1e6b4a;
+  --color-amber: #c8862a;
+
+  /* Flight-recorder console */
+  --color-console: #0f1419;
+  --color-console-2: #171e26;
+
+  --font-display: "Newsreader", "Iowan Old Style", Georgia, serif;
+  --font-sans: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      transition-duration: 0.001ms !important;
+    }
+  }
+
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-display);
+    font-size: 20px;
+    line-height: 1.65;
+    font-optical-sizing: auto;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection {
+    background: var(--color-navy);
+    color: var(--color-paper);
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--color-amber);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    letter-spacing: -0.018em;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+}
+
+@layer components {
+  /* ---- Printed paper surface -------------------------------------- */
+  .grain {
+    position: relative;
+  }
+  .grain::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.5;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='0.22'/%3E%3C/svg%3E");
+  }
+
+  /* ---- Clause numbering / labels ---------------------------------- */
+  .clause {
+    font-family: var(--font-sans);
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    line-height: 1.45;
+  }
+
+  .label {
+    font-family: var(--font-sans);
+    font-size: 17px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    line-height: 1.45;
+  }
+
+  .mono {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 15px;
+    line-height: 1.55;
+    letter-spacing: -0.01em;
+  }
+
+  .num {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+  }
+
+  /* ---- Measure: important content optically centred ---------------- */
+  .measure {
+    max-width: 72ch;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .measure-tight {
+    max-width: 62ch;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* ---- Rules & ledgers -------------------------------------------- */
+  .rule {
+    border-top: 1px solid color-mix(in srgb, var(--color-ink) 18%, transparent);
+  }
+
+  .rule-heavy {
+    border-top: 3px solid var(--color-ink);
+  }
+
+  .ledger-row {
+    border-top: 1px solid color-mix(in srgb, var(--color-ink) 14%, transparent);
+    transition:
+      background-color 220ms ease,
+      transform 220ms ease;
+  }
+  .ledger-row:hover {
+    background-color: color-mix(in srgb, var(--color-paper-2) 70%, transparent);
+  }
+
+  .ledger-row-dark {
+    border-top: 1px solid color-mix(in srgb, #ffffff 12%, transparent);
+    transition: background-color 220ms ease;
+  }
+  .ledger-row-dark:hover {
+    background-color: color-mix(in srgb, #ffffff 5%, transparent);
+  }
+
+  /* ---- Buttons ----------------------------------------------------- */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    font-family: var(--font-sans);
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 18px 30px;
+    border: 1.5px solid var(--color-ink);
+    transition:
+      background-color 200ms ease,
+      color 200ms ease,
+      transform 200ms ease;
+  }
+  .btn-primary {
+    background: var(--color-ink);
+    color: var(--color-paper);
+  }
+  .btn-primary:hover {
+    background: var(--color-navy);
+    border-color: var(--color-navy);
+    transform: translateY(-2px);
+  }
+  .btn-ghost {
+    background: transparent;
+    color: var(--color-ink);
+  }
+  .btn-ghost:hover {
+    background: var(--color-ink);
+    color: var(--color-paper);
+    transform: translateY(-2px);
+  }
+  .btn-on-dark {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    border-color: var(--color-paper);
+  }
+  .btn-on-dark:hover {
+    background: var(--color-amber);
+    border-color: var(--color-amber);
+    color: var(--color-console);
+    transform: translateY(-2px);
+  }
+
+  /* ---- Diff / console blocks --------------------------------------- */
+  .code-slab {
+    background: var(--color-console);
+    color: #d9e2ec;
+    font-family: var(--font-mono);
+    font-size: 15px;
+    line-height: 1.75;
+    padding: 28px 30px;
+    overflow-x: auto;
+    border-left: 4px solid var(--color-navy-light);
+  }
+
+  .paper-slab {
+    background: var(--color-paper-2);
+    border: 1px solid color-mix(in srgb, var(--color-ink) 16%, transparent);
+    font-family: var(--font-mono);
+    font-size: 15px;
+    line-height: 1.75;
+    padding: 26px 28px;
+    overflow-x: auto;
+  }
+
+  /* ---- Stamp ------------------------------------------------------- */
+  .stamp {
+    border: 3px double currentColor;
+    font-family: var(--font-sans);
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    padding: 10px 18px;
+  }
+
+  /* ---- Accordion --------------------------------------------------- */
+  .faq summary {
+    list-style: none;
+    cursor: pointer;
+  }
+  .faq summary::-webkit-details-marker {
+    display: none;
+  }
+  .faq details[open] summary .faq-sign {
+    transform: rotate(45deg);
+  }
+}
+
+@keyframes ink-pulse {
+  0%,
+  100% {
+    opacity: 0.85;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+.pulse-dot {
+  animation: ink-pulse 2.4s ease-in-out infinite;
+}

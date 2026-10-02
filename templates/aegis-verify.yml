@@ -1,0 +1,48 @@
+# Copy to .github/workflows/aegis-verify.yml in the repository you want repaired.
+# The control plane triggers it with repository_dispatch; the GitHub-hosted runner
+# is the clean, ephemeral sandbox in which every candidate patch is verified.
+name: aegis-verify
+
+on:
+  repository_dispatch:
+    types: [aegis-verify]
+
+permissions:
+  contents: write        # push the aegis-forge/<run-id> branch for the winning patch
+
+concurrency:
+  group: aegis-verify-${{ github.event.client_payload.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # --- adapt to your toolchain ------------------------------------
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      # - uses: actions/setup-python@v5
+      #   with: { python-version: "3.12" }
+      # - uses: actions/setup-go@v5
+      #   with: { go-version: "1.23" }
+      # -----------------------------------------------------------------
+
+      - name: Fetch the Aegis Forge runner
+        run: curl -fsSL "${{ vars.AEGIS_URL }}/runner/aegis.mjs" -o /tmp/aegis.mjs
+
+      - name: Verify candidate patches
+        env:
+          AEGIS_URL: ${{ vars.AEGIS_URL }}
+          AEGIS_RUNNER_SECRET: ${{ secrets.AEGIS_RUNNER_SECRET }}
+          AEGIS_RUN_ID: ${{ github.event.client_payload.run_id }}
+          AEGIS_SETUP: npm ci
+          AEGIS_EXTRA_CHECKS: |
+            npm run typecheck --if-present
+            npm run lint --if-present
+        run: node /tmp/aegis.mjs verify

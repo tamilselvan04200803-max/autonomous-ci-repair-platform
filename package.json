@@ -1,0 +1,70 @@
+{
+  "name": "aegis-forge",
+  "version": "0.5.0",
+  "description": "Evidence-gated autonomous software-repair platform and GitHub App with cryptographically signed in-toto DSSE proof bundles",
+  "license": "Apache-2.0",
+  "author": "Tamilselvan <https://github.com/tamilselvan04200803-max>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tamilselvan04200803-max/autonomous-ci-repair-platform.git"
+  },
+  "homepage": "https://github.com/tamilselvan04200803-max/autonomous-ci-repair-platform#readme",
+  "bugs": {
+    "url": "https://github.com/tamilselvan04200803-max/autonomous-ci-repair-platform/issues"
+  },
+  "keywords": [
+    "ci-cd",
+    "software-repair",
+    "autonomous-agents",
+    "github-app",
+    "in-toto",
+    "dsse",
+    "ed25519",
+    "slsa",
+    "devops",
+    "rego",
+    "nextjs",
+    "typescript"
+  ],
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint src",
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test tests/forge.test.ts",
+    "test:watch": "tsx --test --watch tests/forge.test.ts",
+    "test:e2e": "bash scripts/e2e-local.sh",
+    "db:seed": "node src/db/seed.mjs",
+    "db:generate": "drizzle-kit generate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio"
+  },
+  "dependencies": {
+    "dotenv": "17.3.1",
+    "drizzle-orm": "0.45.2",
+    "framer-motion": "^13.4.6",
+    "lucide-react": "^1.49.0",
+    "next": "16.2.6",
+    "pg": "8.20.0",
+    "react": "19.2.6",
+    "react-dom": "19.2.6"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "4.1.17",
+    "@types/node": "22.19.15",
+    "@types/pg": "8.18.0",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "drizzle-kit": "0.31.10",
+    "eslint": "9.39.4",
+    "eslint-config-next": "16.2.6",
+    "postcss": "8.5.8",
+    "tailwindcss": "4.1.17",
+    "tsx": "^4.23.15",
+    "typescript": "5.9.3"
+  }
+}
