@@ -28,7 +28,10 @@ Before any code is ever proposed to a human maintainer, Aegis Forge requires:
 | Guide | Description |
 | :--- | :--- |
 | **[Getting Started](./getting-started.md)** | Step-by-step setup guide for local development, docker-compose, and GitHub App registration. |
+| **[Repository Structure](./repository-structure.md)** | Comprehensive map of all directories, modules, file conventions, and architectural flow. |
 | **[Architecture](./architecture.md)** | Deep dive into the 16-stage repair pipeline, sandboxing model, active core vs planned enterprise stack. |
+| **[Verification Protocol](./verification-protocol.md)** | Detailed breakdown of the empirical red-to-green proof protocol and in-toto DSSE envelopes. |
+| **[API Reference](./api-reference.md)** | Complete specification of all REST endpoints, auth schemas, and request/response contracts. |
 | **[Deployment Guide](./deployment.md)** | Production deployment configurations for Docker, Fly.io, AWS/GCP, reverse proxies, and database backups. |
 | **[Architecture Decisions (ADRs)](./decisions/)** | Formal architectural decision records explaining *why* key security and engineering trade-offs were made. |
 

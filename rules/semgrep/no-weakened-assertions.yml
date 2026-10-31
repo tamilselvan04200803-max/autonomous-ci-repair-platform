@@ -1,0 +1,12 @@
+rules:
+  - id: no-weakened-assertions
+    patterns:
+      - pattern-either:
+          - pattern: expect($X).toBeDefined()
+          - pattern: expect($X).toBeTruthy()
+          - pattern: assert.ok($X)
+    message: "Aegis Gate: Candidate patch introduces weakened assertion checks instead of strict equality."
+    languages:
+      - typescript
+      - javascript
+    severity: ERROR

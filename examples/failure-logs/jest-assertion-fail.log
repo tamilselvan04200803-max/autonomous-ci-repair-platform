@@ -1,0 +1,24 @@
+##[group]Run npm test -- checkout.spec.ts
+npm test -- checkout.spec.ts
+##[endgroup]
+> pricing@1.8.0 test
+> jest checkout.spec.ts
+
+ FAIL  src/checkout.spec.ts
+  ● checkout › applies discount before tax normalisation
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 201
+    Received: 409
+
+      42 |     const res = await checkout(order);
+    > 43 |     expect(res.status).toBe(201);
+         |                        ^
+      44 |   });
+
+      at Object.<anonymous> (src/checkout.spec.ts:43:24)
+      at applyTax (src/pricing/tax.ts:17:11)
+
+Tests:       1 failed, 146 passed, 147 total
+##[error]Process completed with exit code 1.

@@ -1,0 +1,11 @@
+{
+  "id": "BENCH-DEP-01",
+  "name": "NPM ERESOLVE Peer Dependency Conflict",
+  "category": "dependency-drift",
+  "rawLog": "##[group]Run npm ci\nnpm ci\n##[endgroup]\nnpm error code ERESOLVE\nnpm error ERESOLVE could not resolve\nnpm error While resolving: @typescript-eslint/parser@8.0.0\nnpm error Found: eslint@9.12.0\nnpm error Conflicting peer dependency: eslint@^8.57.0\n##[error]Process completed with exit code 1.",
+  "expected": {
+    "failureClass": "dependency",
+    "repairable": true,
+    "failingCommand": "npm ci"
+  }
+}

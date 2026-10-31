@@ -1,0 +1,16 @@
+##[group]Run uv run pytest tests/unit -x -q
+uv run pytest tests/unit -x -q
+##[endgroup]
+==================================== ERRORS ====================================
+________________ ERROR collecting tests/unit/test_settings.py _________________
+tests/unit/test_settings.py:3: in <module>
+    from ledger.settings import Settings
+  File "/home/runner/work/ledger/ledger/src/ledger/settings.py", line 4, in <module>
+    from pydantic import BaseSettings
+  File "/home/runner/work/ledger/ledger/.venv/lib/python3.12/site-packages/pydantic/__init__.py", line 402, in __getattr__
+    return _getattr_migration(attr_name)
+E   ImportError: `BaseSettings` has been moved to the `pydantic-settings` package. See https://docs.pydantic.dev/2.9/migration/#basesettings-has-moved-to-pydantic-settings for more details.
+=========================== short test summary info ============================
+ERROR tests/unit/test_settings.py - pydantic.errors.PydanticImportError
+!!!!!!!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!!!!!!!!
+##[error]Process completed with exit code 2.

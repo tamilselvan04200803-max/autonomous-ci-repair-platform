@@ -1,0 +1,12 @@
+id: no-test-deletion-or-skip
+message: "Patch candidate attempts to skip or disable a test rather than fixing the defect"
+severity: error
+language: typescript
+rule:
+  any:
+    - pattern: test.skip($$$ARGS)
+    - pattern: it.skip($$$ARGS)
+    - pattern: describe.skip($$$ARGS)
+    - pattern: xit($$$ARGS)
+    - pattern: xtest($$$ARGS)
+    - pattern: fit($$$ARGS)

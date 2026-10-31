@@ -1,0 +1,13 @@
+##[group]Run npm run test:integration
+npm run test:integration
+##[endgroup]
+  ● api › health responds
+
+    Error: listen EADDRINUSE: address already in use 127.0.0.1:54321
+
+      at Server.setupListenHandle [as _listen2] (node:net:1872:16)
+
+  ● api › rejects stale token
+
+    thrown: "Exceeded timeout of 5000 ms for a test."
+##[error]Process completed with exit code 1.

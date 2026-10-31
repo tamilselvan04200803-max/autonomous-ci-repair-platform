@@ -1,0 +1,12 @@
+{
+  "id": "BENCH-COMP-03",
+  "name": "Python Pydantic Migration Import Error",
+  "category": "compiler-errors",
+  "rawLog": "##[group]Run uv run pytest tests/unit -x -q\nuv run pytest tests/unit -x -q\n##[endgroup]\n==================================== ERRORS ====================================\n________________ ERROR collecting tests/unit/test_settings.py _________________\ntests/unit/test_settings.py:3: in <module>\n    from ledger.settings import Settings\n  File \"/home/runner/work/ledger/ledger/src/ledger/settings.py\", line 4, in <module>\n    from pydantic import BaseSettings\n  File \"/home/runner/work/ledger/ledger/.venv/lib/python3.12/site-packages/pydantic/__init__.py\", line 402, in __getattr__\n    return _getattr_migration(attr_name)\nE   ImportError: `BaseSettings` has been moved to the `pydantic-settings` package. See https://docs.pydantic.dev/2.9/migration/#basesettings-has-moved-to-pydantic-settings for more details.\n=========================== short test summary info ============================\nERROR tests/unit/test_settings.py - pydantic.errors.PydanticImportError\n##[error]Process completed with exit code 2.",
+  "expected": {
+    "failureClass": "dependency",
+    "repairable": true,
+    "failingCommand": "uv run pytest tests/unit -x -q",
+    "primaryFile": "src/ledger/settings.py"
+  }
+}

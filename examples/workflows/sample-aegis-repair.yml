@@ -1,0 +1,33 @@
+name: Aegis CI Repair Integration Example
+
+# This sample workflow illustrates how an external repository wires Aegis Forge
+# to trigger automatic reproduction and verification upon workflow failure.
+
+on:
+  workflow_run:
+    workflows: ["Continuous Integration", "Unit & Integration Tests"]
+    types: [completed]
+
+jobs:
+  dispatch-repair:
+    name: Notify Aegis Forge
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      checks: write
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Send Failure Webhook
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const payload = {
+              action: "completed",
+              workflow_run: context.payload.workflow_run,
+              repository: context.payload.repository,
+              sender: context.payload.sender
+            };
+            console.log("Aegis Forge notified of failed workflow run:", context.payload.workflow_run.id);

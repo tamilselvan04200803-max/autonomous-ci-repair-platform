@@ -1,0 +1,11 @@
+2026-03-04T11:20:01.0000000Z ##[group]Run pnpm --filter @acme/gateway typecheck
+2026-03-04T11:20:01.0000000Z pnpm --filter @acme/gateway typecheck
+2026-03-04T11:20:01.0000000Z shell: /usr/bin/bash -e {0}
+2026-03-04T11:20:01.0000000Z ##[endgroup]
+2026-03-04T11:20:04.1000000Z > @acme/gateway@2.4.1 typecheck /home/runner/work/acme/acme/services/gateway
+2026-03-04T11:20:04.1000000Z > tsc --noEmit
+2026-03-04T11:20:09.2000000Z src/serialize.ts(3,10): error TS2305: Module '"./types"' has no exported member 'OrderState'.
+2026-03-04T11:20:09.2000000Z src/serialize.ts(21,31): error TS2339: Property 'state' does not exist on type 'DraftOrder'.
+2026-03-04T11:20:09.2000000Z src/http.ts(88,14): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'DraftOrder'.
+2026-03-04T11:20:09.3000000Z  ELIFECYCLE  Command failed with exit code 2.
+2026-03-04T11:20:09.3000000Z ##[error]Process completed with exit code 2.

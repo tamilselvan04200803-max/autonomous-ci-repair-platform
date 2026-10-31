@@ -1,0 +1,11 @@
+{
+  "id": "BENCH-FLAKE-01",
+  "name": "Port Collision Intermittent Failure (EADDRINUSE)",
+  "category": "flaky-tests",
+  "rawLog": "##[group]Run npm run test:integration\nnpm run test:integration\n##[endgroup]\n● api › health responds\nError: listen EADDRINUSE: address already in use 127.0.0.1:54321\nat Server.setupListenHandle [as _listen2] (node:net:1872:16)\n● api › rejects stale token\nthrown: \"Exceeded timeout of 5000 ms for a test.\"\n##[error]Process completed with exit code 1.",
+  "expected": {
+    "failureClass": "flaky",
+    "repairable": false,
+    "escalate": true
+  }
+}

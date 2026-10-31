@@ -37,6 +37,7 @@
     "typecheck": "tsc --noEmit",
     "test": "tsx --test tests/forge.test.ts",
     "test:watch": "tsx --test --watch tests/forge.test.ts",
+    "bench": "tsx benchmarks/runner.mjs",
     "test:e2e": "bash scripts/e2e-local.sh",
     "db:seed": "node src/db/seed.mjs",
     "db:generate": "drizzle-kit generate",

@@ -1,0 +1,12 @@
+{
+  "id": "BENCH-COMP-01",
+  "name": "TypeScript Named Export Mismatch (TS2305)",
+  "category": "compiler-errors",
+  "rawLog": "##[group]Run pnpm --filter @acme/gateway typecheck\npnpm --filter @acme/gateway typecheck\n##[endgroup]\n> @acme/gateway@2.4.1 typecheck\n> tsc --noEmit\nsrc/serialize.ts(3,10): error TS2305: Module '\"./types\"' has no exported member 'OrderState'.\nsrc/serialize.ts(21,31): error TS2339: Property 'state' does not exist on type 'DraftOrder'.\nELIFECYCLE Command failed with exit code 2.\n##[error]Process completed with exit code 2.",
+  "expected": {
+    "failureClass": "compile",
+    "repairable": true,
+    "failingCommand": "pnpm --filter @acme/gateway typecheck",
+    "primaryFile": "src/serialize.ts"
+  }
+}

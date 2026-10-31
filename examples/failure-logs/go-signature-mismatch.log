@@ -1,0 +1,12 @@
+##[group]Run go test ./...
+go test ./...
+##[endgroup]
+# github.com/acme/edge/internal/router [github.com/acme/edge/internal/router.test]
+internal/router/router_test.go:22:18: not enough arguments in call to NewRouter
+	have (Config)
+	want (context.Context, Config)
+internal/router/harness_test.go:14:9: not enough arguments in call to NewRouter
+	have (Config)
+	want (context.Context, Config)
+FAIL	github.com/acme/edge/internal/router [build failed]
+##[error]Process completed with exit code 1.

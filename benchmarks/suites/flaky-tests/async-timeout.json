@@ -1,0 +1,11 @@
+{
+  "id": "BENCH-FLAKE-02",
+  "name": "Async Network Timeout Without Assertion Failure",
+  "category": "flaky-tests",
+  "rawLog": "##[group]Run pnpm test:e2e\npnpm test:e2e\n##[endgroup]\n[test] pinging upstream gateway on :8080\n[error] fetch failed: ConnectTimeoutError: Connect Timeout Error\n[error] ECONNRESET while waiting for handshake\n##[error]Process completed with exit code 143.",
+  "expected": {
+    "failureClass": "flaky",
+    "repairable": false,
+    "escalate": true
+  }
+}

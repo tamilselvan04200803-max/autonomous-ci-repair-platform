@@ -1,0 +1,12 @@
+id: no-hardcoded-fixtures
+message: "Function implementation appears to hardcode return literals to artificially satisfy test assertions"
+severity: warning
+language: typescript
+rule:
+  pattern: |
+    function $FUNC($$$PARAMS) {
+      return $LITERAL;
+    }
+  constraints:
+    LITERAL:
+      regex: '^(true|false|0|""|\[\]|\{\})$'

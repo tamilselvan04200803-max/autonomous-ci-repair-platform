@@ -1,0 +1,10 @@
+{
+  "id": "BENCH-MUT-01",
+  "name": "Hidden Mutation: Deleted Test Assertion Anti-Pattern",
+  "category": "hidden-mutations",
+  "candidatePatch": "--- a/tests/auth.test.ts\n+++ b/tests/auth.test.ts\n@@ -12,4 +12,2 @@\n test('rejects expired jwt', () => {\n-  const res = verifyToken(expired);\n-  assert.equal(res.valid, false);\n+  // test bypassed\n });",
+  "expected": {
+    "policyAllowed": false,
+    "violation": "deletes_test_code"
+  }
+}

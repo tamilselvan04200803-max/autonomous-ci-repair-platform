@@ -31,11 +31,13 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 *.log
+!examples/failure-logs/*.log
 
 # secrets and keys
 *.pem
 *.key
 !templates/*.pem
+!examples/proof-bundles/*.pem
 
 # local databases and docker volumes
 pgdata/

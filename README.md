@@ -121,6 +121,30 @@ Aegis Forge maintains an explicit distinction between its **current active imple
 - **MicroVM Isolation**: Hardware-isolated microVM backends (E2B / Daytona) with hardware-level network egress kill-switches.
 - **Keyless Attestation**: Sigstore Fulcio OIDC certificates and Rekor transparency log anchoring.
 
+## Repository Structure
+
+For an exhaustive breakdown of module responsibilities and component flow, see [`docs/repository-structure.md`](docs/repository-structure.md).
+
+```text
+autonomous-ci-repair-platform/
+├── .github/          # CI/CD workflows, issue templates & PR guidelines
+├── benchmarks/       # Aegis Bench: evaluation suites (compiler errors, flaky tests, mutations)
+├── docs/             # Technical architecture, ADRs, deployment guides & API specs
+├── examples/         # Reference failure logs, sample proof bundles & caller workflows
+├── policies/         # OPA Rego release gate policies enforcing zero degradation
+├── public/           # Static assets and authentic historical engineering imagery
+├── rules/            # Aegis Rules: AST structural patterns (ast-grep & semgrep)
+├── runner/           # Zero-dependency Node.js verification runner (aegis.mjs)
+├── scripts/          # Developer tooling, e2e simulation and proof bundle inspectors
+├── src/              # Next.js 15 App Router platform (APIs, UI, Drizzle DB, domain logic)
+│   ├── app/          # App Router pages and REST API route handlers
+│   ├── components/   # Accessible React UI components & SVG vectors
+│   ├── db/           # PostgreSQL schema, connection pooling & auto-seed
+│   └── lib/forge/    # Core repair pipeline, crypto notary, LLM client & policies
+├── templates/        # Integration workflows for consumer repositories
+└── tests/            # Automated behavioral tests verifying platform invariants
+```
+
 ## Connect a GitHub repository
 
 1. **Deploy** (Docker or any Node 20+ host). Set `FORGE_PUBLIC_URL` and `FORGE_ADMIN_TOKEN`.
@@ -184,6 +208,7 @@ See [`.env.example`](.env.example). `DATABASE_URL` is the only core dependency.
 
 ```bash
 npm test                         # unit tests for analyser, crypto and policy
+npm run bench                    # run Aegis Bench evaluation suite
 npm run typecheck                # strict TypeScript compiler validation
 npm run lint                     # ESLint checks
 npm run build                    # Next.js production build verification
