@@ -8,6 +8,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 URL="${AEGIS_URL:-http://localhost:3000}"
 SECRET="${AEGIS_RUNNER_SECRET:-dev-runner}"
+ADMIN_TOKEN="${FORGE_ADMIN_TOKEN:-ci-admin-token}"
 DB="${DATABASE_URL:-postgresql://postgres:postgres@127.0.0.1:5432/app_db}"
 WORK="$(mktemp -d)"
 trap 'rm -rf "$WORK"' EXIT
@@ -26,7 +27,7 @@ FULL="$(printf '##[group]Run node --test test/math.test.mjs\nnode --test test/ma
 
 say "2. Open a repair run (twice — the second must deduplicate)"
 REQ="$(node -e 'console.log(JSON.stringify({log:process.argv[1],repo:"local/e2e-"+Date.now(),commitSha:process.argv[2],workflow:"ci"}))' "$FULL" "$SHA")"
-AUTH=(); [ -n "${FORGE_ADMIN_TOKEN:-}" ] && AUTH=(-H "authorization: Bearer $FORGE_ADMIN_TOKEN")
+AUTH=(-H "authorization: Bearer $ADMIN_TOKEN")
 RES="$(curl -fsS -X POST "$URL/api/runs" "${AUTH[@]}" -H 'content-type: application/json' -d "$REQ")"; echo "$RES"
 curl -fsS -X POST "$URL/api/runs" "${AUTH[@]}" -H 'content-type: application/json' -d "$REQ"; echo
 RID="$(node -e 'console.log(JSON.parse(process.argv[1]).id)' "$RES")"

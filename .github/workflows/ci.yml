@@ -39,6 +39,8 @@ jobs:
 
     env:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/app_db
+      FORGE_ADMIN_TOKEN: ci-admin-token
+      AEGIS_ADMIN_TOKEN: ci-admin-token
       FORGE_RUNNER_SECRET: ci-runner-secret
       AEGIS_RUNNER_SECRET: ci-runner-secret
       NEXT_TELEMETRY_DISABLED: 1
@@ -64,6 +66,9 @@ jobs:
 
       - name: Run unit tests
         run: npm test
+
+      - name: Run benchmarks
+        run: npm run bench
 
       - name: Build Next.js application
         run: npm run build
