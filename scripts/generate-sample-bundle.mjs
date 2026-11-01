@@ -1,3 +1,6 @@
+#!/usr/bin/env node
+// SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 Tamilselvan <https://github.com/tamilselvan04200803-max>
 import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";

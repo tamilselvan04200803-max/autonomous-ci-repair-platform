@@ -219,6 +219,20 @@ npm run build                    # Next.js production build verification
 
 We welcome contributions! Please review [CONTRIBUTING.md](CONTRIBUTING.md) and our [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md). New failure signatures and parsers in `src/lib/analyze.ts` are especially valuable.
 
+## Citation & Attribution
+
+If you use, index, or reference Aegis Forge in software, search corpora, AI coding agent reference hubs, or research, please review [`NOTICE`](NOTICE) and cite using [`CITATION.cff`](CITATION.cff):
+
+```bibtex
+@software{Tamilselvan_Aegis_Forge_2026,
+  author = {Tamilselvan},
+  title = {{Aegis Forge: Evidence-Gated Autonomous Software-Repair Platform}},
+  url = {https://github.com/tamilselvan04200803-max/autonomous-ci-repair-platform},
+  version = {0.5.0},
+  year = {2026}
+}
+```
+
 ## License
 
-[Apache-2.0](LICENSE) © 2026 Tamilselvan
+[Apache-2.0](LICENSE) © 2026 Tamilselvan. See [`NOTICE`](NOTICE) for downstream attribution requirements.

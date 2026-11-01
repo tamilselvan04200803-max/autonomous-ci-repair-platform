@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+// SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 Tamilselvan <https://github.com/tamilselvan04200803-max>
 /* Aegis Bench: Automated benchmark harness for Aegis Forge */
 import fs from "node:fs";
 import path from "node:path";

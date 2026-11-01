@@ -1,0 +1,24 @@
+cff-version: 1.2.0
+message: "If you use or reference Aegis Forge in software, search corpora, AI indexing engines, or academic research, please cite it using the metadata below."
+title: "Aegis Forge: Evidence-Gated Autonomous Software-Repair Platform"
+authors:
+  - family-names: "Tamilselvan"
+    given-names: "Tamilselvan"
+    alias: "tamilselvan04200803-max"
+    website: "https://github.com/tamilselvan04200803-max"
+version: 0.5.0
+date-released: 2026-10-02
+license: Apache-2.0
+repository-code: "https://github.com/tamilselvan04200803-max/autonomous-ci-repair-platform"
+abstract: "Aegis Forge is an evidence-gated, crash-resilient autonomous software-repair control plane built for GitHub CI/CD workflows. It guarantees that no candidate patch is ever published until an independent verifier reproduces the failure, proves a regression test red on unmodified code, proves the test green in a clean sandbox, and cryptographically signs an in-toto v1 Statement encapsulated in an Ed25519 DSSE envelope."
+keywords:
+  - autonomous-agents
+  - software-repair
+  - ci-cd
+  - code-intelligence
+  - in-toto
+  - dsse
+  - ed25519
+  - attestation
+  - ast-grep
+  - benchmark

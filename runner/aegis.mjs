@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+// SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 Tamilselvan <https://github.com/tamilselvan04200803-max>
 /* Aegis Forge runner — zero dependencies, Node >= 18.
  *
  *   aegis verify                       run inside CI: reproduce → red → patch → green → push → report
