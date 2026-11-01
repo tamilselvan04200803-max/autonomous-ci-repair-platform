@@ -5,10 +5,10 @@
 # Aegis Forge
 
 **Autonomous CI repair that publishes nothing until an independent evidence gate certifies the patch.**
-[![XERJ Corpus Hub Contributor](https://hub.xerj.org/contributors/tamilselvan04200803-max/badge.svg)](https://hub.xerj.org/contributors/tamilselvan04200803-max)
 
 [![CI](https://github.com/tamilselvan04200803-max/autonomous-ci-repair-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/tamilselvan04200803-max/autonomous-ci-repair-platform/actions/workflows/ci.yml)
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-1b3a5c)](LICENSE)
+[![XERJ Corpus Hub Contributor](https://hub.xerj.org/contributors/tamilselvan04200803-max/badge.svg)](https://hub.xerj.org/contributors/tamilselvan04200803-max)
 [![Attestations: in-toto + DSSE](https://img.shields.io/badge/attestations-in--toto%20%2B%20DSSE-b23a1e)](#the-proof-bundle)
 [![Runner: zero deps](https://img.shields.io/badge/runner-zero%20dependencies-c8862a)](runner/aegis.mjs)
 [![Node.js: >=20](https://img.shields.io/badge/node-%3E%3D20.0.0-339933?logo=node.js)](package.json)
