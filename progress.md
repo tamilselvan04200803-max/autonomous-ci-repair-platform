@@ -82,13 +82,13 @@
 - [x] Run ruff, `mypy --strict`, pytest & verify A5 passes (26 passed, 23 mypy files clean)
 
 ### Milestone A6 — Bounded Repair Loop, Governor & Cassettes
-- [ ] Write failing TDD tests `tests/unit/test_a6_repair_loop.py`
-- [ ] Implement `aegis/repair/models.py` & `diff_utils.py` (`SearchReplaceEdit` -> unified diff converter + `git apply --check` validator + schema checks)
-- [ ] Implement `aegis/repair/cassettes.py` (record/replay cassette store keyed by `sha256(model + params + messages)` with zero-token deterministic replay)
-- [ ] Implement `aegis/repair/governor.py` (`BudgetGovernor` enforcing per-case cap, per-minute cap, daily cap in SQLite + bounded 429 exponential backoff with jitter; property/unit tests proving caps cannot be exceeded)
-- [ ] Implement `aegis/repair/llm.py` (`LLMClient` Protocol + `OpenAICompatibleClient` using `httpx` & env keys + `RecordedReplayClient`)
-- [ ] Implement `aegis/repair/loop.py` (`RepairLoop` max N attempts [default 3], redacted truncated retry feedback, schema violation retries -> `FAILED`, never applies invalid diffs)
-- [ ] Run ruff, `mypy --strict`, pytest & verify A6 passes
+- [x] Write failing TDD tests `tests/unit/test_a6_repair_loop.py`
+- [x] Implement `aegis/repair/models.py` & `diff_utils.py` (`SearchReplaceEdit` -> unified diff converter + `git apply --check` validator + schema checks)
+- [x] Implement `aegis/repair/cassettes.py` (record/replay cassette store keyed by `sha256(model + params + messages)` with zero-token deterministic replay)
+- [x] Implement `aegis/repair/governor.py` (`BudgetGovernor` enforcing per-case cap, per-minute cap, daily cap in SQLite + bounded 429 exponential backoff with jitter; property/unit tests proving caps cannot be exceeded)
+- [x] Implement `aegis/repair/llm.py` (`LLMClient` Protocol + `OpenAICompatibleClient` using `httpx` & env keys + `RecordedReplayClient`)
+- [x] Implement `aegis/repair/loop.py` (`RepairLoop` max N attempts [default 3], redacted truncated retry feedback, schema violation retries -> `FAILED`, never applies invalid diffs)
+- [x] Run ruff, `mypy --strict`, pytest & verify A6 passes (31 passed, 30 mypy files clean)
 
 ### Milestone A7 — YAML-Configured Policy Gate (P1–P8)
 - [ ] Create `config/policy.yaml` documenting default rules P1..P8
