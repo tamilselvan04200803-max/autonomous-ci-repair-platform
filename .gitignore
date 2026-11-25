@@ -42,6 +42,23 @@ yarn-error.log*
 # local databases and docker volumes
 pgdata/
 .drizzle/
+*.db
+*.sqlite
+*.sqlite3
+*.sqlite-*
+
+# python environment and caches
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.pytest_tmp/
+.mypy_cache/
+.ruff_cache/
+.aegis/
+.superpowers/
 
 # os files
 .DS_Store

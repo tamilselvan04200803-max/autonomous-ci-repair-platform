@@ -35,3 +35,18 @@ The available history uses `feat:`; `CONTRIBUTING.md` prescribes Conventional Co
 ## Security & Architecture Rules
 
 Never commit secrets or unredacted logs. Keep the runner dependency-free and untrusted repository execution outside the control plane. Preserve fail-closed evidence gates. Synchronize `src/db/schema.ts` and `src/db/ensure.ts`. Security-boundary, attestation-schema, and sandbox-policy changes require an ADR. Report vulnerabilities privately as described in `SECURITY.md`.
+
+---
+
+## Aegis-CI Control Plane Rules (Master Build Plan v1.0 Section 10)
+
+1. `docs/MASTER_PLAN.md` and `docs/REPO_AUDIT.md` are the source of truth for the Python `aegis/` control plane (`aegis` imports `agentsentinel`, never the reverse). Never invent endpoints, flags, config keys, or library APIs.
+2. Verify before use: for every third-party library or GitHub API call, first write and commit a contract test under `tests/contracts/` that proves the call works on the pinned version, with the docs URL in a comment.
+3. Pin everything in `pyproject.toml` / `requirements-py.lock` and record resolved versions in `VERSIONS.md`. Re-read Section 9 of `docs/MASTER_PLAN.md` before touching MCP, GitHub, or Docker code.
+4. Done means these commands were run and their real output checked: `ruff check aegis tests`, `mypy --strict aegis`, `pytest`, plus the milestone acceptance checks and existing Node verification gates (`npm test`, `npm run bench`, `npm run typecheck`, `npm run lint`). Never write "should work".
+5. Never edit, skip, or weaken an existing test to make it pass. Write new tests from acceptance criteria first. Keep all existing Aegis Forge (TypeScript) and AgentSentinel invariants intact.
+6. Branch cleanly with small focused commits. Always invoke Python from `.venv` with bytecode disabled (`$env:PYTHONDONTWRITEBYTECODE="1"; .\.venv\Scripts\python.exe -B ...`).
+7. Secrets: `.env`, `*.pem`, `*.key` files are never committed or printed; run `scripts/check_secrets.py` before commits.
+8. Every public claim goes in `CLAIMS.md` with the file and command that proves it. README benchmark numbers are generated from result files by script, never typed.
+9. Never weaken sandbox flags (`--network=none`, `--read-only`, `--cap-drop=ALL`, `--security-opt=no-new-privileges`), gate defaults, or the write-token ref wrapper (`refs/heads/aegis/*`).
+10. Keep `progress.md` and `HANDOVER.md` updated at each milestone: what changed, what is verified, what is open.
