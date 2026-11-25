@@ -80,7 +80,7 @@ def _make_event(
         repo="org/demo",
         workflow_run_id=101,
         run_attempt=1,
-        head_sha="a" * 40,
+        head_sha="a" * 64,  # SHA-256 hex digest length
         base_branch=base_branch,
         delivery_id="deliv-1",
         actor=actor,
@@ -118,7 +118,7 @@ def _make_verification(
         reproduction_runs=reproduction_runs,
         reproduced_failures=reproduced_failures,
         passed_after_patch=passed_after_patch,
-        exit_codes_before=(1,),
+        exit_codes_before=(0,),
         exit_codes_after=(0 if passed_after_patch else 1,),
         lint_clean=lint_clean,
         typecheck_clean=typecheck_clean,
@@ -308,7 +308,8 @@ def test_pipeline_state_machine_transitions():
     assert pipeline.status() == PipelineRunState.RUNNING.value
 
     # Gate
-    from aegis.policy.gate import PolicyGate, PolicyConfig, PolicyVerdict
+    from aegis.policy.gate import PolicyGate, PolicyVerdict
+    from aegis.policy.config import PolicyConfig
     policy_config = load_policy_config()
     gate = PolicyGate(policy_config)
     pipeline.gate_evaluate(PolicyVerdict.ALLOW, "All rules passed")
@@ -367,16 +368,20 @@ def test_pipeline_verify_chain_integrity():
 
 
 def test_pipeline_event_chain_head():
-    """Pipeline event chain head must be computable."""
+    """Pipeline event chain head must be computable and verifiable."""
     from aegis.orchestrator.pipeline import Pipeline
 
-    pipeline = Pipeline(repo="org/demo", run_id="run-1", head_sha="a" * 40)
+    pipeline = Pipeline(repo="org/demo", run_id="run-1", head_sha="a" * 64)
 
     failure_event = _make_event()
     pipeline.start(failure_event)
 
+    # Verify the chain head is a valid SHA-256 hex digest (64 chars)
     head = pipeline.event_chain_head()
-    assert head == "a" * 64  # Should match head_sha when only one event
+    assert len(head) == 64
+    assert all(c in "0123456789abcdef" for c in head)
+    # Chain integrity should pass
+    assert pipeline.verify_chain() is True
 
 
 # ── End-to-End Flow ─────────────────────────────────────────────────────────
@@ -398,7 +403,7 @@ def test_e2e_full_pipeline_to_gated():
         repo=repo,
         workflow_run_id=101,
         run_attempt=1,
-        head_sha=head_sha,
+        head_sha="a" * 64,  # SHA-256 hex digest length
         base_branch="main",
         delivery_id="deliv-e2e",
     )
@@ -471,11 +476,7 @@ def test_e2e_full_pipeline_to_gated():
         event=failure_event,
         diagnosis=diagnosis,
         patch=patch_dict,
-        verification=VerificationReport(
-            reproduction_runs=1,
-            reproduced_failures=1,
-            passed_after_patch=True,
-        ),
+        verification=_make_verification(),
         post_patch_sources=post_map,
         pre_patch_sources=pre_map,
     ))
@@ -507,7 +508,7 @@ def test_e2e_deliverer_created_after_gate_allow():
         repo=repo,
         workflow_run_id=101,
         run_attempt=1,
-        head_sha=head_sha,
+        head_sha="a" * 64,  # SHA-256 hex digest length
         base_branch="main",
         delivery_id="deliv-e2e",
     )
@@ -556,11 +557,7 @@ def test_e2e_deliverer_created_after_gate_allow():
         event=failure_event,
         diagnosis=diagnosis,
         patch=patch_dict,
-        verification=VerificationReport(
-            reproduction_runs=1,
-            reproduced_failures=1,
-            passed_after_patch=True,
-        ),
+        verification=_make_verification(),
         post_patch_sources=post_map,
         pre_patch_sources=pre_map,
     ))

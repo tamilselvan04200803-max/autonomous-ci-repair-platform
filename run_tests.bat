@@ -1,0 +1,1 @@
+cd C:\Users\tamil\OneDrive\Documents\projects\autonomous-ci-repair-platform && timeout 120 npm test 2>&1

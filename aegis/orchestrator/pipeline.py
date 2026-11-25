@@ -31,6 +31,7 @@ from aegis.domain.models import (
     Diagnosis,
     FailureEvent,
     FailureClass,
+    PolicyDecision,
     VerificationReport,
     PolicyVerdict,
 )
@@ -252,31 +253,35 @@ class Pipeline:
             f"[pipeline] REPAIRING attempt {attempt}: diff_sha256={patch.get('diff_sha256', '?')}"
         )
 
-    def gate_evaluate(self, verdict: PolicyVerdict, reason: str = "") -> None:
+    def gate_evaluate(self, verdict: PolicyVerdict | PolicyDecision, reason: str = "") -> None:
         """Move to GATED (or REFUSED/ESCALATED/FAILED) after policy evaluation.
 
         Args:
-            verdict: The PolicyVerdict (ALLOW, DENY, or ESCALATE)
+            verdict: The PolicyVerdict (ALLOW, DENY, or ESCALATE), or a PolicyDecision
+                     object returned from gate.evaluate()
             reason: Human-readable reason for the verdict
         """
-        self._state = PipelineRunState.RUNNING
+        # Extract PolicyVerdict from PolicyDecision if needed
+        if isinstance(verdict, PolicyDecision):
+            verdict = verdict.verdict
 
         if verdict == PolicyVerdict.ALLOW:
-            next_state = "GATED"
+            next_state = PipelineRunState.GATED
             print("[pipeline] GATE: ALLOW - proceeding to deliver")
         elif verdict == PolicyVerdict.DENY:
-            next_state = "REFUSED"
+            next_state = PipelineRunState.REFUSED
             print("[pipeline] GATE: DENY - repair refused")
         elif verdict == PolicyVerdict.ESCALATE:
-            next_state = "ESCALATED"
+            next_state = PipelineRunState.ESCALATED
             print("[pipeline] GATE: ESCALATE - human review required")
         else:
-            next_state = "FAILED"
+            next_state = PipelineRunState.FAILED
             print("[pipeline] GATE: FAILED - unexpected verdict")
 
+        self._state = next_state
         self._append_event("gate", {"policy_verdict": verdict.value, "reason": reason})
         self._persist_checkpoint(next_state, 6)
-        print(f"[pipeline] GATE: {next_state}")
+        print(f"[pipeline] GATE: {next_state.value}")
 
     def resume(self) -> bool:
         """Resume pipeline from the last checkpoint.
@@ -382,7 +387,6 @@ class Pipeline:
     def head_sha(self, value: str) -> None:
         self._head_sha = value
 
-    @property
     def status(self) -> str:
         """Get the current pipeline status."""
         return self._state.value

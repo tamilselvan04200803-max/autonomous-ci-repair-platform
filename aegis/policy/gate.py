@@ -6,16 +6,30 @@ whether a repair patch should be allowed, denied, or escalated.
 
 from __future__ import annotations
 
-import re
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, TypedDict
 
 from aegis.domain.models import (
     FailureClass,
     PolicyDecision,
     PolicyVerdict,
-    VerificationReport,
 )
+
+
+# PolicyContext: shared context passed to gate evaluation (P1..P8).
+# Used by both PolicyGate.evaluate() and the e2e tests.
+class PolicyContext(TypedDict):
+    repo_root: str
+    event: Any
+    diagnosis: Any
+    patch: Any
+    verification: Any
+    post_patch_sources: dict[str, str]
+    pre_patch_sources: dict[str, str]
+
+
+# PolicyEvaluationResult: result returned from a single rule evaluation.
+PolicyEvaluationResult = dict[str, Any]
 
 
 def normalize_rel_path(p: str) -> str:
@@ -32,25 +46,84 @@ def is_test_file_path(p: str) -> bool:
     return p.endswith("_test.py") or "/tests/" in p
 
 
+def _get_repo_root(context: Any) -> str:
+    """Extract repo_root from PolicyContext (supports object or dict)."""
+    if hasattr(context, "repo_root") and not isinstance(context, dict):
+        return str(context.repo_root)
+    return context.get("repo_root", ".") if isinstance(context, dict) else "."
+
+
+def _get_diagnosis(context: Any) -> Any:
+    """Extract diagnosis from PolicyContext (supports object or dict)."""
+    if hasattr(context, "diagnosis") and not isinstance(context, dict):
+        return context.diagnosis
+    return context.get("diagnosis", {}) if isinstance(context, dict) else {}
+
+
+def _get_patch(context: Any) -> Any:
+    """Extract patch from PolicyContext (supports object or dict)."""
+    if hasattr(context, "patch") and not isinstance(context, dict):
+        return context.patch
+    return context.get("patch", {}) if isinstance(context, dict) else {}
+
+
+def _get_pre_patch_sources(context: Any) -> dict[str, str]:
+    """Extract pre_patch_sources from PolicyContext (supports object or dict)."""
+    if hasattr(context, "pre_patch_sources") and not isinstance(context, dict):
+        return context.pre_patch_sources
+    return context.get("pre_patch_sources", {}) if isinstance(context, dict) else {}
+
+
+def _get_post_patch_sources(context: Any) -> dict[str, str]:
+    """Extract post_patch_sources from PolicyContext (supports object or dict)."""
+    if hasattr(context, "post_patch_sources") and not isinstance(context, dict):
+        return context.post_patch_sources
+    return context.get("post_patch_sources", {}) if isinstance(context, dict) else {}
+
+
+def _get_verification(context: Any) -> Any:
+    """Extract verification from PolicyContext (supports object or dict)."""
+    if hasattr(context, "verification") and not isinstance(context, dict):
+        return context.verification
+    return context.get("verification", {}) if isinstance(context, dict) else {}
+
+
 class PolicyGate:
     """Evaluates rules P1..P8 deterministically in fixed order."""
 
     def __init__(self, config: Any) -> None:
         self.config = config
+        # Map legacy attribute names to current config schema (P2-P8)
+        self._p2_cfg = (
+            config.p2_test_integrity
+            if hasattr(config, "p2_test_integrity")
+            else getattr(config, "p2_diff_budget", None)
+        )
+        self._p3_cfg = getattr(config, "p3_diff_budget", None)
+        # P4 config: new schema uses p4_dangerous_constructs; fall back to p4_timeout
+        self._p4_cfg = (
+            getattr(config, "p4_dangerous_constructs", None)
+            or getattr(config, "p4_timeout", None)
+        )
+        self._p5_cfg = getattr(config, "p5_verbosity", None)
+        self._p6_cfg = getattr(config, "p6_verbosity", None)
+        self._p7_cfg = getattr(config, "p7_verbosity", None)
+        self._p8_cfg = getattr(config, "p8_verbosity", None)
 
     def _collect_source_maps(
         self,
         context: Any,
-    ) -> Tuple[dict[str, str], dict[str, str]]:
+    ) -> tuple[dict[str, str], dict[str, str]]:
         pre_map: dict[str, str] = {}
         post_map: dict[str, str] = {}
-        provided_pre = context.pre_patch_sources or {}
+        provided_pre = _get_pre_patch_sources(context)
 
         # Handle both dict and object formats for patch
-        if hasattr(context.patch, "changed_files"):
-            all_rels = {normalize_rel_path(p) for p in context.patch.changed_files}
-        elif isinstance(context.patch, dict):
-            all_rels = {normalize_rel_path(p) for p in context.patch.get("changed_files", [])}
+        patch_obj = _get_patch(context)
+        if hasattr(patch_obj, "changed_files"):
+            all_rels = {normalize_rel_path(p) for p in patch_obj.changed_files}
+        elif isinstance(patch_obj, dict):
+            all_rels = {normalize_rel_path(p) for p in patch_obj.get("changed_files", [])}
         else:
             all_rels = set()
         all_rels.update(normalize_rel_path(p) for p in context.post_patch_sources)
@@ -75,17 +148,22 @@ class PolicyGate:
 
     def _eval_p1(self, context: Any) -> PolicyDecision:
         cfg = self.config.p1_paths
+        repo_root = _get_repo_root(context)
+        diagnosis_obj = _get_diagnosis(context)
+        patch_obj = _get_patch(context)
+        provided_pre = _get_pre_patch_sources(context)
+
         allow_lock = (
             cfg.allow_lockfiles_for_f4
-            and context.diagnosis.failure_class == FailureClass.F4_DEPENDENCY_DRIFT
+            and diagnosis_obj.failure_class == FailureClass.F4_DEPENDENCY_DRIFT
         )
         violations: list[str] = []
-        root_resolved = Path(context.repo_root).resolve()
+        root_resolved = Path(repo_root).resolve()
 
         # Handle both dict and object formats for patch
         changed = [
             normalize_rel_path(p)
-            for p in (context.patch.changed_files if hasattr(context.patch, "changed_files") else context.patch.get("changed_files", []))
+            for p in (patch_obj.changed_files if hasattr(patch_obj, "changed_files") else patch_obj.get("changed_files", []))
         ]
         for raw in changed:
             rel = raw
@@ -95,8 +173,8 @@ class PolicyGate:
                 continue
             # Note: homoglyph and control checks simplified for brevity
             if getattr(cfg, "reject_symlinks", False):
-                candidate = Path(context.repo_root) / rel
-                cur = Path(context.repo_root)
+                candidate = Path(repo_root) / rel
+                cur = Path(repo_root)
                 symlink_hit = candidate.is_symlink()
                 for part in parts:
                     cur = cur / part
@@ -130,11 +208,12 @@ class PolicyGate:
         )
 
     def _eval_p2(self, context: Any) -> PolicyDecision:
-        cfg = self.config.p2_diff_budget
+        cfg = self._p2_cfg or self.config.p2_test_integrity
+        patch_obj = _get_patch(context)
         # Handle both dict and object formats for patch
         changed = [
             normalize_rel_path(p)
-            for p in (context.patch.changed_files if hasattr(context.patch, "changed_files") else context.patch.get("changed_files", []))
+            for p in (patch_obj.changed_files if hasattr(patch_obj, "changed_files") else patch_obj.get("changed_files", []))
         ]
         if cfg.escalate_test_only_patch and changed and all(
             is_test_file_path(p) for p in changed
@@ -155,18 +234,19 @@ class PolicyGate:
 
     def _eval_p3(self, context: Any) -> PolicyDecision:
         cfg = self.config.p3_diff_budget
+        patch_obj = _get_patch(context)
         # Handle both dict and object formats for patch
         changed = [
             normalize_rel_path(p)
-            for p in (context.patch.changed_files if hasattr(context.patch, "changed_files") else context.patch.get("changed_files", []))
+            for p in (patch_obj.changed_files if hasattr(patch_obj, "changed_files") else patch_obj.get("changed_files", []))
         ]
         file_count = len(changed)
         # Handle both dict and object formats for added/deleted lines
-        added = getattr(context.patch, "added_lines", 0) if hasattr(context.patch, "added_lines") else (
-            context.patch.get("added_lines", 0) if isinstance(context.patch, dict) else 0
+        added = getattr(patch_obj, "added_lines", 0) if hasattr(patch_obj, "added_lines") else (
+            patch_obj.get("added_lines", 0) if isinstance(patch_obj, dict) else 0
         )
-        deleted = getattr(context.patch, "deleted_lines", 0) if hasattr(context.patch, "deleted_lines") else (
-            context.patch.get("deleted_lines", 0) if isinstance(context.patch, dict) else 0
+        deleted = getattr(patch_obj, "deleted_lines", 0) if hasattr(patch_obj, "deleted_lines") else (
+            patch_obj.get("deleted_lines", 0) if isinstance(patch_obj, dict) else 0
         )
         reasons: list[str] = []
         if file_count > cfg.max_files:
@@ -178,42 +258,47 @@ class PolicyGate:
                 rule_id="P3",
                 verdict=PolicyVerdict.DENY,
                 reason="; ".join(reasons),
-                details=(file_count, added, deleted),
+                details=(str(file_count), str(added), str(deleted)),
             )
         return PolicyDecision(
             rule_id="P3",
             verdict=PolicyVerdict.ALLOW,
             reason="Diff budget within limits",
-            details=(file_count, added, deleted),
+            details=(str(file_count), str(added), str(deleted)),
         )
 
     def _eval_p4(self, context: Any) -> PolicyDecision:
-        cfg = self.config.p4_timeout
-        # Handle both dict and object formats for verification
+        cfg = self._p4_cfg or getattr(self.config, "p4_dangerous_constructs", None)
+        verification_obj = _get_verification(context)
+
         passed_after_patch = (
-            context.verification.passed_after_patch
-            if hasattr(context, "verification") and hasattr(context.verification, "passed_after_patch")
-            else context.verification.get("passed_after_patch", False) if isinstance(context.verification, dict) else False
+            verification_obj.passed_after_patch
+            if hasattr(verification_obj, "passed_after_patch")
+            else verification_obj.get("passed_after_patch", False) if isinstance(verification_obj, dict) else False
         )
         exit_codes_before = (
-            context.verification.exit_codes_before
-            if hasattr(context, "verification") and hasattr(context.verification, "exit_codes_before")
-            else context.verification.get("exit_codes_before", (1,)) if isinstance(context.verification, dict) else (1,)
+            verification_obj.exit_codes_before
+            if hasattr(verification_obj, "exit_codes_before")
+            else verification_obj.get("exit_codes_before", (1,)) if isinstance(verification_obj, dict) else (1,)
         )
         exit_codes_after = (
-            context.verification.exit_codes_after
-            if hasattr(context, "verification") and hasattr(context.verification, "exit_codes_after")
-            else context.verification.get("exit_codes_after", (0,)) if isinstance(context.verification, dict) else (0,)
+            verification_obj.exit_codes_after
+            if hasattr(verification_obj, "exit_codes_after")
+            else verification_obj.get("exit_codes_after", (0,)) if isinstance(verification_obj, dict) else (0,)
         )
+        # Check network disabled: from verification first, then config fallback
         network_disabled = (
-            context.verification.network_disabled
-            if hasattr(context, "verification") and hasattr(context.verification, "network_disabled")
-            else context.verification.get("network_disabled", True) if isinstance(context.verification, dict) else True
+            verification_obj.network_disabled
+            if hasattr(verification_obj, "network_disabled")
+            else verification_obj.get("network_disabled", True) if isinstance(verification_obj, dict)
+            else (cfg.forbid_subprocess_shell_true if cfg else True)
         )
+        # Check read-only rootfs: from verification first, then config fallback
         read_only_rootfs = (
-            context.verification.read_only_rootfs
-            if hasattr(context, "verification") and hasattr(context.verification, "read_only_rootfs")
-            else context.verification.get("read_only_rootfs", True) if isinstance(context.verification, dict) else True
+            verification_obj.read_only_rootfs
+            if hasattr(verification_obj, "read_only_rootfs")
+            else verification_obj.get("read_only_rootfs", True) if isinstance(verification_obj, dict)
+            else True
         )
 
         if not passed_after_patch:
@@ -221,120 +306,127 @@ class PolicyGate:
                 rule_id="P4",
                 verdict=PolicyVerdict.DENY,
                 reason="Post-patch verification did not pass",
-                details={},
+                details=(),
             )
         if any(c != 0 for c in exit_codes_before):
             return PolicyDecision(
                 rule_id="P4",
                 verdict=PolicyVerdict.DENY,
                 reason="Pre-patch exit codes indicate failure",
-                details={},
+                details=(),
             )
         if not network_disabled:
             return PolicyDecision(
                 rule_id="P4",
                 verdict=PolicyVerdict.DENY,
                 reason="Network not disabled during sandbox execution",
-                details={},
+                details=(),
             )
         if not read_only_rootfs:
             return PolicyDecision(
                 rule_id="P4",
                 verdict=PolicyVerdict.DENY,
                 reason="Read-only rootfs not enforced",
-                details={},
+                details=(),
             )
         return PolicyDecision(
             rule_id="P4",
             verdict=PolicyVerdict.ALLOW,
             reason="Sandbox verification passed",
-            details={},
+            details=(),
         )
 
     def _eval_p5(self, context: Any) -> PolicyDecision:
-        cfg = self.config.p5_verbosity
-        # Handle both dict and object formats for verification
+        cfg = self._p5_cfg or getattr(self.config, "p5_verbosity", None)
+        verification_obj = _get_verification(context)
+
         passed_after_patch = (
-            context.verification.passed_after_patch
-            if hasattr(context, "verification") and hasattr(context.verification, "passed_after_patch")
-            else context.verification.get("passed_after_patch", False) if isinstance(context.verification, dict) else False
+            verification_obj.passed_after_patch
+            if hasattr(verification_obj, "passed_after_patch")
+            else verification_obj.get("passed_after_patch", False) if isinstance(verification_obj, dict) else False
         )
         if not passed_after_patch:
             return PolicyDecision(
                 rule_id="P5",
                 verdict=PolicyVerdict.DENY,
                 reason="Post-patch verification did not pass",
-                details={},
+                details=(),
             )
         return PolicyDecision(
             rule_id="P5",
             verdict=PolicyVerdict.ALLOW,
             reason="Post-patch verification check P5",
-            details={},
+            details=(),
         )
 
     def _eval_p6(self, context: Any) -> PolicyDecision:
-        cfg = self.config.p6_verbosity
+        cfg = self._p6_cfg or getattr(self.config, "p6_verbosity", None)
+        verification_obj = _get_verification(context)
+
         lint_clean = (
-            context.verification.lint_clean
-            if hasattr(context, "verification") and hasattr(context.verification, "lint_clean")
-            else context.verification.get("lint_clean", True) if isinstance(context.verification, dict) else True
+            verification_obj.lint_clean
+            if hasattr(verification_obj, "lint_clean")
+            else verification_obj.get("lint_clean", True) if isinstance(verification_obj, dict) else True
         )
         if not lint_clean:
             return PolicyDecision(
                 rule_id="P6",
                 verdict=PolicyVerdict.DENY,
                 reason="Lint check failed",
-                details={},
+                details=(),
             )
         return PolicyDecision(
             rule_id="P6",
             verdict=PolicyVerdict.ALLOW,
             reason="Lint check passed",
-            details={},
+            details=(),
         )
 
     def _eval_p7(self, context: Any) -> PolicyDecision:
-        cfg = self.config.p7_verbosity
+        cfg = self._p7_cfg or getattr(self.config, "p7_verbosity", None)
+        verification_obj = _get_verification(context)
+
         typecheck_clean = (
-            context.verification.typecheck_clean
-            if hasattr(context, "verification") and hasattr(context.verification, "typecheck_clean")
-            else context.verification.get("typecheck_clean", True) if isinstance(context.verification, dict) else True
+            verification_obj.typecheck_clean
+            if hasattr(verification_obj, "typecheck_clean")
+            else verification_obj.get("typecheck_clean", True) if isinstance(verification_obj, dict) else True
         )
         if not typecheck_clean:
             return PolicyDecision(
                 rule_id="P7",
                 verdict=PolicyVerdict.DENY,
                 reason="Type check failed",
-                details={},
+                details=(),
             )
         return PolicyDecision(
             rule_id="P7",
             verdict=PolicyVerdict.ALLOW,
             reason="Type check passed",
-            details={},
+            details=(),
         )
 
     def _eval_p8(self, context: Any) -> PolicyDecision:
-        cfg = self.config.p8_verbosity
+        cfg = self._p8_cfg or getattr(self.config, "p8_verbosity", None)
+        diagnosis_obj = _get_diagnosis(context)
+
         # Handle both dict and object formats for diagnosis
         failure_class = (
-            context.diagnosis.failure_class
-            if hasattr(context, "diagnosis") and hasattr(context.diagnosis, "failure_class")
-            else context.diagnosis.get("failure_class", "") if isinstance(context.diagnosis, dict) else ""
+            diagnosis_obj.failure_class
+            if hasattr(diagnosis_obj, "failure_class")
+            else diagnosis_obj.get("failure_class", "") if isinstance(diagnosis_obj, dict) else ""
         )
         if failure_class in ("F2_SECURITY_VIOLATION", "F3_INFRASTRUCTURE_FAILURE"):
             return PolicyDecision(
                 rule_id="P8",
                 verdict=PolicyVerdict.ESCALATE,
                 reason=f"Critical failure class {failure_class} requires human review",
-                details={},
+                details=(),
             )
         return PolicyDecision(
             rule_id="P8",
             verdict=PolicyVerdict.ALLOW,
             reason="Failure class does not require escalation",
-            details={},
+            details=(),
         )
 
     def evaluate(
@@ -401,5 +493,5 @@ class PolicyGate:
             rule_id="P8",
             verdict=PolicyVerdict.ALLOW,
             reason="All gate rules P1-P8 passed",
-            details={},
+            details=(),
         )
