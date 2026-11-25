@@ -1,0 +1,7 @@
+=================================== ERRORS ====================================
+_____________________ ERROR collecting tests/test_parser.py ____________________
+src/parser.py:42: SyntaxError: invalid syntax
+=========================== short test summary info ============================
+ERROR tests/test_parser.py
+!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 0.11s

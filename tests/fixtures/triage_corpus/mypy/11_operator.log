@@ -1,0 +1,2 @@
+src/mathx.py:11: error: Unsupported operand types for + ("str" and "int")  [operator]
+Found 1 error in 1 file

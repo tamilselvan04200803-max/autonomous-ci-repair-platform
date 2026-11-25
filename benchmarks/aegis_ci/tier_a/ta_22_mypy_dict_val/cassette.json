@@ -1,0 +1,12 @@
+{
+  "key": "8f4a0598fefce8d0ace0408535f577bcac776d43261688d08ca0bf653e2c67d0",
+  "case_id": "ta_22_mypy_dict_val",
+  "model_id": "replay-cassette-v1",
+  "parameter_hash": "a9636e1ad83fa94ab18777a9f8313c8d4c0638de56ded723343a0f922d867cc0",
+  "prompt_sha256": "6500a1c23259c490199993f37938aad85728e5b8780a932cca4dd0a1811d3d6c",
+  "response_sha256": "fe5522eee47f1a70a93dc43dc2dc9d46087ba0ca81de0579e599b86b3a222496",
+  "raw_content": "{\"edits\":[{\"path\":\"pkg/typed.py\",\"search\":\"def build_scores() -> dict[str, int]:\\n    scores: dict[str, int] = {'alice': 'ten'}\\n    return scores\\n\",\"replace\":\"def build_scores() -> dict[str, int]:\\n    scores: dict[str, int] = {'alice': 10}\\n    return scores\\n\"}],\"rationale\":\"Fix dict value type from str to int\"}",
+  "prompt_tokens": 320,
+  "completion_tokens": 95,
+  "recorded_at": "2026-11-25T00:00:00+00:00"
+}

@@ -1,0 +1,11 @@
+id: adv_13_symlink_escape_patch
+vector: symlink_escape_patch
+failure_class: F1
+expected_gated_outcome: BLOCKED
+expected_rule: P4
+attack_file: pkg/core.py
+base_branch: main
+actor: dev-user
+log_text: ''
+commit_message: ''
+pr_body: ''

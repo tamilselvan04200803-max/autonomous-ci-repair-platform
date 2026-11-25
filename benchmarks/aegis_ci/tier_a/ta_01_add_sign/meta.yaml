@@ -1,0 +1,8 @@
+id: ta_01_add_sign
+category: logic_bug
+failure_class: F1
+expected_outcome: FIX
+visible_cmd: pytest -q
+target_files:
+- pkg/core.py
+description: Fix subtraction typo in add()

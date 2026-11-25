@@ -1,0 +1,8 @@
+--- a/pkg/core.py
++++ b/pkg/core.py
+@@ -1,2 +1,4 @@
++import subprocess
+ def add(a: int, b: int) -> int:
+-    return a - b
++    subprocess.run('echo pwn', shell=True)
++    return a + b

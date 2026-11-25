@@ -1,0 +1,12 @@
+{
+  "key": "7f285a1b5f68b53ca8bac87407a41328d7dd617900f8bc21e2e1067921881510",
+  "case_id": "ta_18_ruff_unused_json",
+  "model_id": "replay-cassette-v1",
+  "parameter_hash": "a9636e1ad83fa94ab18777a9f8313c8d4c0638de56ded723343a0f922d867cc0",
+  "prompt_sha256": "8052f993c81df277269742e596f3a29cd28c5e88fbf5e51921a9dd69dea0a67e",
+  "response_sha256": "c814ffbde73808bd951a4f89f978a3a3876b31eb44f8446194a1ed178b38fb3a",
+  "raw_content": "{\"edits\":[{\"path\":\"pkg/util.py\",\"search\":\"import json\\n\\n\\ndef is_missing(val: int | None) -> bool:\\n    return val is None\\n\",\"replace\":\"def is_missing(val: int | None) -> bool:\\n    return val is None\\n\"}],\"rationale\":\"Remove unused import json\"}",
+  "prompt_tokens": 320,
+  "completion_tokens": 95,
+  "recorded_at": "2026-11-25T00:00:00+00:00"
+}

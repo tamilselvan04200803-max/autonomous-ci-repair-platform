@@ -1,0 +1,2 @@
+src/cfg.py:4: error: Library stubs not installed for "yaml"  [import-untyped]
+Found 1 error in 1 file

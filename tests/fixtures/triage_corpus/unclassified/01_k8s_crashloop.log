@@ -1,0 +1,2 @@
+Pod api-gateway-7d8f9 entered CrashLoopBackOff: Back-off restarting failed container
+Exit Code: 137 (OOMKilled)

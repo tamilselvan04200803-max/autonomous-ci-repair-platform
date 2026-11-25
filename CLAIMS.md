@@ -1,0 +1,16 @@
+# Aegis-CI Claims & Verification Ledger
+
+Every public claim for Aegis-CI (`aegis/`) is mapped below to its exact implementation file(s) and verification command(s).
+
+| ID | Claim | Implementation | Verification Command |
+| :--- | :--- | :--- | :--- |
+| C1 | Frozen Pydantic v2 domain models & unidirectional `aegis -> agentsentinel` import boundary | `aegis/domain/models.py` | `.venv/Scripts/python.exe -B -m pytest tests/contracts/test_pydantic_v2_contract.py tests/unit/test_a1_domain_and_chain.py` |
+| C2 | Tamper-evident SHA-256 hash-chained SQLite ledger & crash-resume checkpointing | `aegis/ledger/store.py` | `.venv/Scripts/python.exe -B -m pytest tests/unit/test_a1_domain_and_chain.py` + `scripts/demo_e2e.py` |
+| C3 | Raw-bytes HMAC-SHA256 GitHub webhook verification (`hmac.compare_digest`), delivery dedup, loop/fork guards, RS256 App JWT, `X-GitHub-Api-Version: 2026-03-10` | `aegis/ingest/webhook.py`, `aegis/github/client.py` | `.venv/Scripts/python.exe -B -m pytest tests/contracts/test_fastapi_contract.py tests/contracts/test_pyjwt_contract.py tests/contracts/test_httpx_contract.py tests/unit/test_a2_ingest_and_github.py` |
+| C4 | Deterministic triage parsers (`pytest`/JUnit XML, `ruff`, `mypy`, `pip`) + `k`-rerun flake detection (`F5_FLAKY`) + ANSI/secret redaction | `aegis/triage/parsers.py`, `aegis/triage/flake.py`, `aegis/triage/redactor.py` | `.venv/Scripts/python.exe -B -m pytest tests/unit/test_a3_triage_and_redactor.py` |
+| C5 | Two-phase reproduction sandbox (`--network=none`, `--read-only`, `--cap-drop=ALL`, `--security-opt=no-new-privileges`, tar-stream workspace) | `aegis/sandbox/tar_stream.py`, `aegis/sandbox/runner.py` | `.venv/Scripts/python.exe -B -m pytest tests/contracts/test_tarfile_container_contract.py tests/unit/test_a4_sandbox.py` |
+| C6 | Stdlib `ast` code graph, B0/B1/B2 localizer + Section 7.5 selection rule, and read-only MCP v2 server (`mcp==2.3.0`, zero mutating tools) | `aegis/graph/`, `aegis/localization/localizer.py`, `aegis/mcp/server.py` | `.venv/Scripts/python.exe -B -m pytest tests/contracts/test_mcp_v2_contract.py tests/unit/test_a5_graph_and_mcp.py` + `scripts/run_localization_experiment.py` |
+| C7 | Bounded repair loop (<=3 attempts), SHA-256 record/replay cassettes, SQLite `BudgetGovernor` | `aegis/repair/` | `.venv/Scripts/python.exe -B -m pytest tests/unit/test_a6_repair_loop.py` |
+| C8 | YAML-configured Policy Gate (`P1..P8`) with AST test-integrity checks and AgentSentinel `OverfitGuard` | `config/policy.yaml`, `aegis/policy/` | `.venv/Scripts/python.exe -B -m pytest tests/unit/test_a7_policy_gate.py` |
+| C9 | Guarded GitHub deliverer (`refs/heads/aegis/*` ref wrapper, `AEGIS_ENABLED` kill switch, idempotency) & Section 4 pipeline CLI | `aegis/delivery/deliverer.py`, `aegis/orchestrator/pipeline.py`, `aegis/cli.py` | `.venv/Scripts/python.exe -B -m pytest tests/unit/test_a8_deliverer_and_e2e.py` |
+| C10 | Hermetic Tier A (`n=42`) & Adversarial (`n=13`) replay benchmark with 0/13 gated attack success rate and Wilson 95% CIs | `benchmarks/aegis_ci/`, `aegis/bench/`, `benchmarks/results/tier_a_replay.json` | `.venv/Scripts/python.exe -B scripts/validate_benchmarks.py` + `scripts/generate_report.py` |

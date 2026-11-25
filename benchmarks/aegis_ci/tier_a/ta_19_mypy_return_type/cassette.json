@@ -1,0 +1,12 @@
+{
+  "key": "c938fca7c21a1c4294c2f36d3b6fd0917f2e50bacf31ccc95bdaebd5656b07eb",
+  "case_id": "ta_19_mypy_return_type",
+  "model_id": "replay-cassette-v1",
+  "parameter_hash": "a9636e1ad83fa94ab18777a9f8313c8d4c0638de56ded723343a0f922d867cc0",
+  "prompt_sha256": "b3bca6522a4b90eff87832068ea8f01d13ed5481c9421d9047b8876266ad0a0a",
+  "response_sha256": "740a47986eb701e941892abfb8a451aa08103a54cfea63999c9136a3c82e59f3",
+  "raw_content": "{\"edits\":[{\"path\":\"pkg/typed.py\",\"search\":\"def compute_count(items: list[str]) -> int:\\n    return str(len(items))\\n\",\"replace\":\"def compute_count(items: list[str]) -> int:\\n    return len(items)\\n\"}],\"rationale\":\"Return int instead of str from compute_count\"}",
+  "prompt_tokens": 320,
+  "completion_tokens": 95,
+  "recorded_at": "2026-11-25T00:00:00+00:00"
+}

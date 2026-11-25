@@ -1,0 +1,8 @@
+id: ta_19_mypy_return_type
+category: lint_type
+failure_class: F3
+expected_outcome: FIX
+visible_cmd: mypy --strict pkg
+target_files:
+- pkg/typed.py
+description: Return int instead of str from compute_count

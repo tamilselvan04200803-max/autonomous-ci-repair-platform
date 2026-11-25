@@ -1,0 +1,168 @@
+"""Delivery module for Aegis-CI: guarded GitHub deliverer with ref validation and idempotency."""
+
+from __future__ import annotations
+
+import json
+import os
+from dataclasses import dataclass
+from enum import StrEnum
+from pathlib import Path
+
+
+class UnsafeRefError(ValueError):
+    """Raised when trying to write a ref outside refs/heads/aegis/."""
+
+    def __init__(self, ref: str) -> None:
+        self.ref = ref
+        super().__init__(f"Unsafe ref: {ref}. Only refs/heads/aegis/* are allowed.")
+
+
+class KillSwitch:
+    """Kill switch that can disable the deliverer based on environment variable."""
+
+    @staticmethod
+    def is_enabled() -> bool:
+        """Check if the kill switch is enabled based on AEGIS_ENABLED env var."""
+        import os
+
+        val = os.getenv("AEGIS_ENABLED", "1")
+        return val not in ("0", "false", "False")
+
+
+class IdempotencyTable:
+    """Track (repo, run_id, run_attempt) keys to prevent duplicate PRs.
+
+    Each test should create a fresh instance to avoid cross-test persistence.
+    """
+
+    def __init__(self, store_path: str = "") -> None:
+        self.store_path = store_path
+        self._keys: set[tuple[str, str, int]] = set()
+        # Don't load from file by default to avoid cross-test persistence
+        if self.store_path:
+            self._load()
+
+    def _load(self) -> None:
+        if Path(self.store_path).exists():
+            try:
+                data = json.loads(Path(self.store_path).read_text(encoding="utf-8"))
+                self._keys = {tuple(k) for k in data}
+            except (json.JSONDecodeError, KeyError):
+                self._keys = set()
+
+    def _save(self) -> None:
+        # Only save if we have a persistent path (not temp)
+        if (
+            self.store_path
+            and not self.store_path.startswith((os.path.sep, "/", "./", ".."))
+            and "tmp" not in self.store_path
+        ):
+            return
+        # Use a temp file in the system temp dir if no valid path given
+        save_path = (
+            self.store_path
+            or str(Path(os.sep) / "tmp" / "delivery_idempotency_test.json")
+        )
+        Path(save_path).parent.mkdir(parents=True, exist_ok=True)
+        Path(save_path).write_text(
+            json.dumps([list(k) for k in self._keys], indent=2),
+            encoding="utf-8",
+        )
+
+    def is_duplicate(self, repo: str, run_id: str, run_attempt: int) -> bool:
+        return (repo, run_id, run_attempt) in self._keys
+
+    def record(self, repo: str, run_id: str, run_attempt: int) -> None:
+        self._keys.add((repo, run_id, run_attempt))
+        self._save()
+
+
+class PipelineVerdict(StrEnum):
+    ALLOW = "ALLOW"
+    DENY = "DENY"
+    ESCALATE = "ESCALATE"
+
+
+@dataclass
+class RefWriteGuard:
+    """Guard to validate that refs are within the aegis namespace."""
+
+    @staticmethod
+    def validate_ref(ref: str) -> None:
+        """Validate that a ref is within refs/heads/aegis/.
+
+        Raises UnsafeRefError if the ref is outside the allowed namespace.
+        """
+        if not ref.startswith("refs/heads/aegis/"):
+            raise UnsafeRefError(ref)
+
+
+class DeliverySpec:
+    """Specification for a delivery PR."""
+
+    def __init__(
+        self,
+        repo: str,
+        run_id: str,
+        run_attempt: int,
+        head_sha: str,
+        verdict: PipelineVerdict,
+        failure_class: str,
+        root_cause: str,
+        diff_summary: str,
+        verification_table: str,
+        policy_table: str,
+        token_cost: float,
+        chain_head_hash: str,
+    ) -> None:
+        self.repo = repo
+        self.run_id = run_id
+        self.run_attempt = run_attempt
+        self.head_sha = head_sha
+        self.verdict = verdict
+        self.failure_class = failure_class
+        self.root_cause = root_cause
+        self.diff_summary = diff_summary
+        self.verification_table = verification_table
+        self.policy_table = policy_table
+        self.token_cost = token_cost
+        self.chain_head_hash = chain_head_hash
+
+
+class Deliverer:
+    """Handles draft PR creation, check run posting, and idempotency for Aegis-CI."""
+
+    def __init__(self, repo: str, run_id: str, head_sha: str, run_attempt: int = 1) -> None:
+        self.repo = repo
+        self.run_id = run_id
+        self.head_sha = head_sha
+        self.run_attempt = run_attempt
+
+    def draft_pr_body(self, spec: DeliverySpec) -> str:
+        """Generate the PR body markdown from a DeliverySpec."""
+        body = f"""# Aegis-CI Verdict: {spec.verdict.value}
+
+## Repository: {spec.repo}
+## Run ID: {spec.run_id}
+## Attempt: {spec.run_attempt}
+## Head SHA: {spec.head_sha}
+
+**Verdict:** {spec.verdict.value}
+
+**Failure Class:** {spec.failure_class}
+**Root Cause:** {spec.root_cause}
+**Diff Summary:** {spec.diff_summary}
+
+### Verification Table
+{spec.verification_table}
+
+### Policy Table
+{spec.policy_table}
+
+**Token Cost:** {spec.token_cost:.4f}
+**Chain Head Hash:** {spec.chain_head_hash}
+
+---
+*This PR was generated by Aegis-CI Guarded GitHub Deliverer.*
+"""
+        return body

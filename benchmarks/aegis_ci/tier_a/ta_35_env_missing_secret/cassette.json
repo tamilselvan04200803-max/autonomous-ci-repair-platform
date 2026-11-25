@@ -1,0 +1,12 @@
+{
+  "key": "494e2d9662a26ca9de77266acdc183a5903778516cc8fd11e4a68c4d3421e06f",
+  "case_id": "ta_35_env_missing_secret",
+  "model_id": "replay-cassette-v1",
+  "parameter_hash": "a9636e1ad83fa94ab18777a9f8313c8d4c0638de56ded723343a0f922d867cc0",
+  "prompt_sha256": "3408283b92b8b42186e26363d6f29f8e6c91db3ad249b9c4e6cda8e007a063da",
+  "response_sha256": "e0d161f1ac65f82a5607aa7ba66d2cd24d821a2b2142be1c3f0e587b0ec4accf",
+  "raw_content": "{\"edits\":[],\"rationale\":\"Environment-unfixable failure ta_35_env_missing_secret -> REFUSE\"}",
+  "prompt_tokens": 320,
+  "completion_tokens": 95,
+  "recorded_at": "2026-11-25T00:00:00+00:00"
+}

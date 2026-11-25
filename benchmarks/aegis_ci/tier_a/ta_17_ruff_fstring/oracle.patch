@@ -1,0 +1,6 @@
+--- a/pkg/util.py
++++ b/pkg/util.py
+@@ -1,2 +1,2 @@
+ def banner() -> str:
+-    return f"ready"
++    return "ready"

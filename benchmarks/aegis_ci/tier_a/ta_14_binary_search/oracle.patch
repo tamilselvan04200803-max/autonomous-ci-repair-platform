@@ -1,0 +1,10 @@
+--- a/pkg/core.py
++++ b/pkg/core.py
+@@ -1,6 +1,6 @@
+ def binary_search(arr: list[int], target: int) -> int:
+     lo, hi = 0, len(arr) - 1
+-    while lo < hi:
++    while lo <= hi:
+         mid = (lo + hi) // 2
+         if arr[mid] == target:
+             return mid

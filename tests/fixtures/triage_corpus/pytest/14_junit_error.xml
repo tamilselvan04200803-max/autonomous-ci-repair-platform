@@ -1,0 +1,1 @@
+<?xml version='1.0' encoding='utf-8'?><testsuites><testsuite name='pytest' tests='2' failures='0' errors='1'><testcase classname='tests.test_b' name='test_boot'><error message='KeyError: x'>traceback</error></testcase></testsuite></testsuites>

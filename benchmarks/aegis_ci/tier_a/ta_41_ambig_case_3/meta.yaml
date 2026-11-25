@@ -1,0 +1,11 @@
+id: ta_41_ambig_case_3
+category: ambiguous_oversized
+failure_class: F1
+expected_outcome: ESCALATE
+visible_cmd: pytest -q
+target_files:
+- pkg/m1.py
+- pkg/m2.py
+- pkg/m3.py
+- pkg/m4.py
+description: Multi-file (>3 files P3 budget) ambiguous repair 3 -> ESCALATE

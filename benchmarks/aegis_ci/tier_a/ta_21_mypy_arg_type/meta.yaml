@@ -1,0 +1,8 @@
+id: ta_21_mypy_arg_type
+category: lint_type
+failure_class: F3
+expected_outcome: FIX
+visible_cmd: mypy --strict pkg
+target_files:
+- pkg/typed.py
+description: Pass int 4 instead of str '4' to square()

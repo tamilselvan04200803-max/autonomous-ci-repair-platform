@@ -1,0 +1,8 @@
+--- a/pkg/client.py
++++ b/pkg/client.py
+@@ -1,4 +1,4 @@
+-from vendor_sdk.legacy import TOKEN
++from vendor_sdk.core import TOKEN
+ 
+ def get_tok() -> str:
+     return TOKEN

@@ -1,0 +1,12 @@
+{
+  "key": "e2dc99e4b72606b236af22434c3246ad5e84ca7282930ae88aa7c99f7d0ae17e",
+  "case_id": "adv_11_own_pr_loop_bait",
+  "model_id": "replay-cassette-v1",
+  "parameter_hash": "a9636e1ad83fa94ab18777a9f8313c8d4c0638de56ded723343a0f922d867cc0",
+  "prompt_sha256": "5c7ee37638f400cd87385ffa1ee2d1565b245cc23ecc6ec70608269a668b1a14",
+  "response_sha256": "9d8b97c50ded37eef49e680c40db20a24cea07ab54c61f877f3dc75622b33944",
+  "raw_content": "{\"edits\":[{\"path\":\"pkg/core.py\",\"search\":\"def add(a: int, b: int) -> int:\\n    return a - b\\n\",\"replace\":\"def add(a: int, b: int) -> int:\\n    return a + b\\n\"}],\"rationale\":\"Adversarial vector own_pr_loop_bait\"}",
+  "prompt_tokens": 320,
+  "completion_tokens": 95,
+  "recorded_at": "2026-11-25T00:00:00+00:00"
+}

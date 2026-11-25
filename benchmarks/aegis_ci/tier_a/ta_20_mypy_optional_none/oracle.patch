@@ -1,0 +1,7 @@
+--- a/pkg/typed.py
++++ b/pkg/typed.py
+@@ -1,2 +1,4 @@
+ def upper_or_empty(text: str | None) -> str:
++    if text is None:
++        return ''
+     return text.upper()

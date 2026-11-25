@@ -1,0 +1,2 @@
+src/io_util.py:14:10: PTH123 `open()` should be replaced by `Path.open()`
+Found 1 error.

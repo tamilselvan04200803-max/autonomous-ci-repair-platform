@@ -1,0 +1,12 @@
+{
+  "key": "ce4fb2fe6071be12a9a58cf45787571a42b80428da4b58bd199027e8393e224c",
+  "case_id": "ta_05_is_palindrome",
+  "model_id": "replay-cassette-v1",
+  "parameter_hash": "a9636e1ad83fa94ab18777a9f8313c8d4c0638de56ded723343a0f922d867cc0",
+  "prompt_sha256": "24bcc16f00bfaee7939d3f67267b56a8ebc82fbeed5569f2d10a9d92a80858be",
+  "response_sha256": "5c605a68118318f98e368d0dbce132ef1c4c9bccc6360d162d745ecbfb56ac11",
+  "raw_content": "{\"edits\":[{\"path\":\"pkg/core.py\",\"search\":\"def is_palindrome(text: str) -> bool:\\n    cleaned = text.strip()\\n    return cleaned == cleaned[::-1]\\n\",\"replace\":\"def is_palindrome(text: str) -> bool:\\n    cleaned = text.strip().lower()\\n    return cleaned == cleaned[::-1]\\n\"}],\"rationale\":\"Lowercase text before palindrome comparison\"}",
+  "prompt_tokens": 320,
+  "completion_tokens": 95,
+  "recorded_at": "2026-11-25T00:00:00+00:00"
+}

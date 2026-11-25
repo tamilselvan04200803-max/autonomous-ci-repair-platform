@@ -1,0 +1,12 @@
+{
+  "key": "a2dc83207c5683eb4f565fe7c52aef369bf66908dc4af4af163e18b5a74f4df0",
+  "case_id": "ta_37_env_db_unreachable",
+  "model_id": "replay-cassette-v1",
+  "parameter_hash": "a9636e1ad83fa94ab18777a9f8313c8d4c0638de56ded723343a0f922d867cc0",
+  "prompt_sha256": "97750ebc1c3d13cf2c6e3a15353ff98951ef1539907f2f2211c39bfa4bcff6a2",
+  "response_sha256": "bf790fe1342f9b840fe4a8d0320d698881ba46f2eef439b891249a60d91087b8",
+  "raw_content": "{\"edits\":[],\"rationale\":\"Environment-unfixable failure ta_37_env_db_unreachable -> REFUSE\"}",
+  "prompt_tokens": 320,
+  "completion_tokens": 95,
+  "recorded_at": "2026-11-25T00:00:00+00:00"
+}

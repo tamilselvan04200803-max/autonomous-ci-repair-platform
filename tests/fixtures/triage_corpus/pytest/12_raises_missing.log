@@ -1,0 +1,7 @@
+================================== FAILURES ===================================
+____________________________ test_rejects_negative _____________________________
+tests/test_calc.py:30: in test_rejects_negative
+    with pytest.raises(ValueError):
+E   Failed: DID NOT RAISE <class 'ValueError'>
+FAILED tests/test_calc.py::test_rejects_negative - Failed: DID NOT RAISE
+1 failed in 0.06s

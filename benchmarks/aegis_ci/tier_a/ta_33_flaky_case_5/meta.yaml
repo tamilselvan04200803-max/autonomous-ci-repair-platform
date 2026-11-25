@@ -1,0 +1,7 @@
+id: ta_33_flaky_case_5
+category: flaky
+failure_class: F5
+expected_outcome: REFUSE
+visible_cmd: pytest -q
+target_files: []
+description: Deterministic alternating flaky test 5 -> F5 REFUSE

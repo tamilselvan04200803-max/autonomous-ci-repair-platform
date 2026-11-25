@@ -1,0 +1,2 @@
+src/build.py:5:9: C408 Unnecessary `dict()` call (rewrite as a literal)
+Found 1 error.

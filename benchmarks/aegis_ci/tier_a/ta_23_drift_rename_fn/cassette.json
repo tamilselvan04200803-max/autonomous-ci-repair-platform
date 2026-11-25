@@ -1,0 +1,12 @@
+{
+  "key": "f1cee64d4dd546e25aa22dd84b2aba852c952c5a9d1f94f67e88df998c6be00d",
+  "case_id": "ta_23_drift_rename_fn",
+  "model_id": "replay-cassette-v1",
+  "parameter_hash": "a9636e1ad83fa94ab18777a9f8313c8d4c0638de56ded723343a0f922d867cc0",
+  "prompt_sha256": "bf5f27bdd0d97cb800cff3f9f26c43097cbdb17dac15cd11bfb14a693a7d29e3",
+  "response_sha256": "fe96a86e193504a20b8cd4a56d18a827d792a72e1a85432be00becdc3c6e2cd9",
+  "raw_content": "{\"edits\":[{\"path\":\"pkg/client.py\",\"search\":\"from vendor_sdk import compute\\n\\ndef run(x: int) -> int:\\n    return compute(x)\\n\",\"replace\":\"from vendor_sdk import evaluate\\n\\ndef run(x: int) -> int:\\n    return evaluate(x)\\n\"}],\"rationale\":\"Update renamed vendor_sdk.compute -> evaluate\"}",
+  "prompt_tokens": 320,
+  "completion_tokens": 95,
+  "recorded_at": "2026-11-25T00:00:00+00:00"
+}

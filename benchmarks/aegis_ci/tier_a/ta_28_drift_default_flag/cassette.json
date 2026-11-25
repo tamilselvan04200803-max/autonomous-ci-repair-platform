@@ -1,0 +1,12 @@
+{
+  "key": "8f519259bbae54fe3e9db6a39b543bd73dd76922c7d808b843d342777891b336",
+  "case_id": "ta_28_drift_default_flag",
+  "model_id": "replay-cassette-v1",
+  "parameter_hash": "a9636e1ad83fa94ab18777a9f8313c8d4c0638de56ded723343a0f922d867cc0",
+  "prompt_sha256": "45c7b162fca11c40fc50ccc1346ab6e1c1a4bcecae4e5eb69adc775ee8ab215f",
+  "response_sha256": "c12cc3881dd0803fb652c14cbfe0c936066c217c9d676afe9777d443ae7bad63",
+  "raw_content": "{\"edits\":[{\"path\":\"pkg/client.py\",\"search\":\"from vendor_sdk import render\\n\\ndef preview(name: str) -> str:\\n    return render(name)\\n\",\"replace\":\"from vendor_sdk import render\\n\\ndef preview(name: str) -> str:\\n    return render(name, strict=False)\\n\"}],\"rationale\":\"Pass strict=False after vendor_sdk default flipped\"}",
+  "prompt_tokens": 320,
+  "completion_tokens": 95,
+  "recorded_at": "2026-11-25T00:00:00+00:00"
+}

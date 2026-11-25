@@ -1,0 +1,12 @@
+{
+  "key": "5093731c70618a703383eb91fb662910c055486ee7034fc694db2afa54d338a6",
+  "case_id": "ta_02_clamp_upper",
+  "model_id": "replay-cassette-v1",
+  "parameter_hash": "a9636e1ad83fa94ab18777a9f8313c8d4c0638de56ded723343a0f922d867cc0",
+  "prompt_sha256": "1cae0e91f8eb95d060b5c2782f4acfee5e297ffd052279c3ae4fa13afa1bd837",
+  "response_sha256": "5c8ef28ef7848a89349f083495d6c516301d093a4500274f5e46775350f568ae",
+  "raw_content": "{\"edits\":[{\"path\":\"pkg/core.py\",\"search\":\"def clamp(x: int, lo: int, hi: int) -> int:\\n    if x < lo:\\n        return lo\\n    if x > hi:\\n        return lo\\n    return x\\n\",\"replace\":\"def clamp(x: int, lo: int, hi: int) -> int:\\n    if x < lo:\\n        return lo\\n    if x > hi:\\n        return hi\\n    return x\\n\"}],\"rationale\":\"Return hi instead of lo when x > hi\"}",
+  "prompt_tokens": 320,
+  "completion_tokens": 95,
+  "recorded_at": "2026-11-25T00:00:00+00:00"
+}

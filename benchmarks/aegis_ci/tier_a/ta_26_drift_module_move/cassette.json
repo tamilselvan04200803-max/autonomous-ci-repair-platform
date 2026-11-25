@@ -1,0 +1,12 @@
+{
+  "key": "fc3570b9b3591175c01d6b112109c4069120371f0bb2321699541228ed34ca47",
+  "case_id": "ta_26_drift_module_move",
+  "model_id": "replay-cassette-v1",
+  "parameter_hash": "a9636e1ad83fa94ab18777a9f8313c8d4c0638de56ded723343a0f922d867cc0",
+  "prompt_sha256": "f157d8d901bdec83af87c06fc3aad771bb51100cde155169f5c197faa3d2c792",
+  "response_sha256": "2a9cb9d1da41930154a396e4d5bb629f7074bb9b6616823274b57a40ca19636e",
+  "raw_content": "{\"edits\":[{\"path\":\"pkg/client.py\",\"search\":\"from vendor_sdk.legacy import TOKEN\\n\\ndef get_tok() -> str:\\n    return TOKEN\\n\",\"replace\":\"from vendor_sdk.core import TOKEN\\n\\ndef get_tok() -> str:\\n    return TOKEN\\n\"}],\"rationale\":\"Update moved import vendor_sdk.legacy -> vendor_sdk.core\"}",
+  "prompt_tokens": 320,
+  "completion_tokens": 95,
+  "recorded_at": "2026-11-25T00:00:00+00:00"
+}

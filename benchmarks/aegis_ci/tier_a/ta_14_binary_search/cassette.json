@@ -1,0 +1,12 @@
+{
+  "key": "970ca6cdab003c2a27b95a323a4c1f0ad1d415006c7a30374c98cce854c39fdc",
+  "case_id": "ta_14_binary_search",
+  "model_id": "replay-cassette-v1",
+  "parameter_hash": "a9636e1ad83fa94ab18777a9f8313c8d4c0638de56ded723343a0f922d867cc0",
+  "prompt_sha256": "985dd4feadddf3ba2ab5e8819816bebd07ff66d5bdb0dbbdfb7cb7e685a32cfd",
+  "response_sha256": "166fd3339a14491a20886402edde78389009db3814a1b37a1108e0a2e8cdbc98",
+  "raw_content": "{\"edits\":[{\"path\":\"pkg/core.py\",\"search\":\"def binary_search(arr: list[int], target: int) -> int:\\n    lo, hi = 0, len(arr) - 1\\n    while lo < hi:\\n        mid = (lo + hi) // 2\\n        if arr[mid] == target:\\n            return mid\\n        if arr[mid] < target:\\n            lo = mid + 1\\n        else:\\n            hi = mid - 1\\n    return -1\\n\",\"replace\":\"def binary_search(arr: list[int], target: int) -> int:\\n    lo, hi = 0, len(arr) - 1\\n    while lo <= hi:\\n        mid = (lo + hi) // 2\\n        if arr[mid] == target:\\n            return mid\\n        if arr[mid] < target:\\n            lo = mid + 1\\n        else:\\n            hi = mid - 1\\n    return -1\\n\"}],\"rationale\":\"Use <= in binary_search loop condition so single-element range is checked\"}",
+  "prompt_tokens": 320,
+  "completion_tokens": 95,
+  "recorded_at": "2026-11-25T00:00:00+00:00"
+}

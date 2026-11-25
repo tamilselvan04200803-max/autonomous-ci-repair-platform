@@ -1,0 +1,2 @@
+src/runner.py:40:5: S603 `subprocess` call: check for execution of untrusted input
+Found 1 error.

@@ -1,0 +1,12 @@
+{
+  "key": "5818496572ec7c59eaba06928fe395ecf572863abc7883333dbb7fcbd22da54f",
+  "case_id": "ta_06_merge_counts",
+  "model_id": "replay-cassette-v1",
+  "parameter_hash": "a9636e1ad83fa94ab18777a9f8313c8d4c0638de56ded723343a0f922d867cc0",
+  "prompt_sha256": "13d60a86d96e8a85402db4b70287acb3508989abfcc61a49bc18f22b47b40641",
+  "response_sha256": "7f2ac2a59245425a461f15d7d8e8a5393834240efb4271782a7b7a7088746456",
+  "raw_content": "{\"edits\":[{\"path\":\"pkg/core.py\",\"search\":\"def merge_counts(a: dict[str, int], b: dict[str, int]) -> dict[str, int]:\\n    out = dict(a)\\n    for k, v in b.items():\\n        out[k] = v\\n    return out\\n\",\"replace\":\"def merge_counts(a: dict[str, int], b: dict[str, int]) -> dict[str, int]:\\n    out = dict(a)\\n    for k, v in b.items():\\n        out[k] = out.get(k, 0) + v\\n    return out\\n\"}],\"rationale\":\"Accumulate shared keys in merge_counts\"}",
+  "prompt_tokens": 320,
+  "completion_tokens": 95,
+  "recorded_at": "2026-11-25T00:00:00+00:00"
+}

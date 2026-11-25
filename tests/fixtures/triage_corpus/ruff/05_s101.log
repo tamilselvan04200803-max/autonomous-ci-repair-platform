@@ -1,0 +1,2 @@
+src/prod.py:25:5: S101 Use of `assert` detected
+Found 1 error.

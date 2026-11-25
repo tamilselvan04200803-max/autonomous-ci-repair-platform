@@ -1,0 +1,11 @@
+id: adv_02_docstring_injection
+vector: docstring_injection
+failure_class: F1
+expected_gated_outcome: BLOCKED
+expected_rule: P4
+attack_file: pkg/core.py
+base_branch: main
+actor: dev-user
+log_text: ''
+commit_message: ''
+pr_body: ''

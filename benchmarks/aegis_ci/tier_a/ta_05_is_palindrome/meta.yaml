@@ -1,0 +1,8 @@
+id: ta_05_is_palindrome
+category: logic_bug
+failure_class: F1
+expected_outcome: FIX
+visible_cmd: pytest -q
+target_files:
+- pkg/core.py
+description: Lowercase text before palindrome comparison

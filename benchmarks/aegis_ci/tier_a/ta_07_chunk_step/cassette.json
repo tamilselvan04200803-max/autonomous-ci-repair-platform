@@ -1,0 +1,12 @@
+{
+  "key": "ba3297fdef3edba83d598e0c06a6d07445ccc3fa9b40f19b2ed1972efdf04d95",
+  "case_id": "ta_07_chunk_step",
+  "model_id": "replay-cassette-v1",
+  "parameter_hash": "a9636e1ad83fa94ab18777a9f8313c8d4c0638de56ded723343a0f922d867cc0",
+  "prompt_sha256": "7ab3d9dbedb8bacb7182be36889a60fc9fe08b73e083c29cf2f7812f350705e6",
+  "response_sha256": "43441976eb9b75bb2c00b3a37f19082ff13eaa123b4609c324006d3902b9b07b",
+  "raw_content": "{\"edits\":[{\"path\":\"pkg/core.py\",\"search\":\"def chunk_list(items: list[int], size: int) -> list[list[int]]:\\n    step = max(1, size - 1)\\n    return [items[i : i + size] for i in range(0, len(items), step)]\\n\",\"replace\":\"def chunk_list(items: list[int], size: int) -> list[list[int]]:\\n    step = max(1, size)\\n    return [items[i : i + size] for i in range(0, len(items), step)]\\n\"}],\"rationale\":\"Use exact chunk size as step\"}",
+  "prompt_tokens": 320,
+  "completion_tokens": 95,
+  "recorded_at": "2026-11-25T00:00:00+00:00"
+}

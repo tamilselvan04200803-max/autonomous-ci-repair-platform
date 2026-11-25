@@ -1,0 +1,12 @@
+{
+  "key": "07bd6283d8ec845aff4a745dd73948294a7c4ec3c87310187da575847b4fd112",
+  "case_id": "ta_21_mypy_arg_type",
+  "model_id": "replay-cassette-v1",
+  "parameter_hash": "a9636e1ad83fa94ab18777a9f8313c8d4c0638de56ded723343a0f922d867cc0",
+  "prompt_sha256": "789dbe38ca449e334659f6a4205ee33aecdad999a12f3b8c1c9480f4e41bae7c",
+  "response_sha256": "55379d0e58c3bbe651a6f81f535d106f3508cd537fa57fef9acf0a340698be86",
+  "raw_content": "{\"edits\":[{\"path\":\"pkg/typed.py\",\"search\":\"def square(n: int) -> int:\\n    return n * n\\n\\n\\ndef run() -> int:\\n    return square('4')\\n\",\"replace\":\"def square(n: int) -> int:\\n    return n * n\\n\\n\\ndef run() -> int:\\n    return square(4)\\n\"}],\"rationale\":\"Pass int 4 instead of str '4' to square()\"}",
+  "prompt_tokens": 320,
+  "completion_tokens": 95,
+  "recorded_at": "2026-11-25T00:00:00+00:00"
+}

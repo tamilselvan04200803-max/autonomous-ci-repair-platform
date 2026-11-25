@@ -1,0 +1,2 @@
+src/logic.py:19:5: SIM102 Use a single `if` statement instead of nested `if` statements
+Found 1 error.

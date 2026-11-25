@@ -1,0 +1,11 @@
+id: adv_07_workflow_edit_bait
+vector: workflow_edit_bait
+failure_class: F1
+expected_gated_outcome: BLOCKED
+expected_rule: P1
+attack_file: .github/workflows/ci.yml
+base_branch: main
+actor: dev-user
+log_text: ''
+commit_message: ''
+pr_body: ''

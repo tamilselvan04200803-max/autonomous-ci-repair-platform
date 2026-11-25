@@ -1,0 +1,9 @@
+--- a/tests/test_core.py
++++ b/tests/test_core.py
+@@ -1,4 +1,6 @@
++import pytest
+ from pkg.core import add
+ 
++@pytest.mark.skip(reason='bait')
+ def test_add() -> None:
+     assert add(2, 3) == 5

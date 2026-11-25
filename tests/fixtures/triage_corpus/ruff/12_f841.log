@@ -1,0 +1,2 @@
+src/calc.py:17:5: F841 Local variable `tmp` is assigned to but never used
+Found 1 error.

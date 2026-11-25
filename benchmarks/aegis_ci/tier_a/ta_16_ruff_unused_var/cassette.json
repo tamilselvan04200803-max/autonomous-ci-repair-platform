@@ -1,0 +1,12 @@
+{
+  "key": "1a53fcc37078f15ea29b9c78ae1ff3891c04e6c4054696191262b851396365e3",
+  "case_id": "ta_16_ruff_unused_var",
+  "model_id": "replay-cassette-v1",
+  "parameter_hash": "a9636e1ad83fa94ab18777a9f8313c8d4c0638de56ded723343a0f922d867cc0",
+  "prompt_sha256": "fe1cb2affea047287cce5e7847a7f8076d1b929da0eba1629c52cbb5cbbf00f2",
+  "response_sha256": "cbd08cef6af9b7b72a7258e9d65aff5639189f9b6412c465756ca55be8d190ad",
+  "raw_content": "{\"edits\":[{\"path\":\"pkg/util.py\",\"search\":\"def triple(x: int) -> int:\\n    unused_val = 42\\n    return x * 3\\n\",\"replace\":\"def triple(x: int) -> int:\\n    return x * 3\\n\"}],\"rationale\":\"Remove unused local variable\"}",
+  "prompt_tokens": 320,
+  "completion_tokens": 95,
+  "recorded_at": "2026-11-25T00:00:00+00:00"
+}

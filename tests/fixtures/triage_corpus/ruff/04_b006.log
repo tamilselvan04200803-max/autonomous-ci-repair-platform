@@ -1,0 +1,2 @@
+src/fn.py:8:18: B006 Do not use mutable data structures for argument defaults
+Found 1 error.

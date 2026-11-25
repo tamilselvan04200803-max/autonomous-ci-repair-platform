@@ -1,0 +1,2 @@
+  x No solution found when resolving dependencies:
+  `-> Because fastapi==0.165.0 depends on starlette>=1.0.0 and you require starlette<0.50, we can conclude that your requirements are unsatisfiable.

@@ -1,0 +1,8 @@
+=================================== ERRORS ====================================
+________________________ ERROR at setup of test_client _________________________
+tests/conftest.py:15: in client
+    raise RuntimeError('db seed failed')
+E   RuntimeError: db seed failed
+=========================== short test summary info ============================
+ERROR tests/test_api.py::test_client - RuntimeError: db seed failed
+1 error in 0.09s

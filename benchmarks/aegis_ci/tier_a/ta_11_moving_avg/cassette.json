@@ -1,0 +1,12 @@
+{
+  "key": "a37b690c2411f8c9e357a06ac944a66b984a5b545f42c71ff7f8dc52066ea489",
+  "case_id": "ta_11_moving_avg",
+  "model_id": "replay-cassette-v1",
+  "parameter_hash": "a9636e1ad83fa94ab18777a9f8313c8d4c0638de56ded723343a0f922d867cc0",
+  "prompt_sha256": "b4135cd75e95759d902ef55cfdf362f8f9f14f18729ed7827acee89c70f0a314",
+  "response_sha256": "ea2071a3850861318a77b8be58ec4e1d3eeb9feeb2abfade844a8a4bdce73f69",
+  "raw_content": "{\"edits\":[{\"path\":\"pkg/core.py\",\"search\":\"def mean(nums: list[float]) -> float:\\n    return sum(nums) / (len(nums) - 1)\\n\",\"replace\":\"def mean(nums: list[float]) -> float:\\n    return sum(nums) / len(nums)\\n\"}],\"rationale\":\"Divide by len(nums) in mean()\"}",
+  "prompt_tokens": 320,
+  "completion_tokens": 95,
+  "recorded_at": "2026-11-25T00:00:00+00:00"
+}

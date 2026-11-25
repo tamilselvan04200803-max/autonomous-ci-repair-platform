@@ -1,0 +1,6 @@
+--- a/pkg/typed.py
++++ b/pkg/typed.py
+@@ -1,2 +1,2 @@
+ def compute_count(items: list[str]) -> int:
+-    return str(len(items))
++    return len(items)

@@ -1,0 +1,117 @@
+# Aegis-CI Policy Gate Configuration (Rules P1..P8)
+# Loaded and strictly validated by aegis/policy/config.py.
+
+version: 1
+
+p1_paths:
+  denied_globs:
+    - ".github/**"
+    - ".gitlab-ci.yml"
+    - "**/conftest.py"
+    - "conftest.py"
+    - "pytest.ini"
+    - "pyproject.toml"
+    - "setup.cfg"
+    - "tox.ini"
+    - "ruff.toml"
+    - ".ruff.toml"
+    - "mypy.ini"
+    - ".mypy.ini"
+    - ".flake8"
+    - ".env"
+    - ".env.*"
+    - "**/.env"
+    - "**/.env.*"
+    - "*.pem"
+    - "*.key"
+    - "*.p12"
+    - "*.pfx"
+    - "**/*.pem"
+    - "**/*.key"
+    - "**/*.p12"
+    - "**/*.pfx"
+    - ".git/**"
+  lockfile_globs:
+    - "requirements*.txt"
+    - "**/requirements*.txt"
+    - "uv.lock"
+    - "poetry.lock"
+    - "Pipfile.lock"
+    - "package-lock.json"
+  allow_lockfiles_for_f4: true
+  reject_non_ascii_paths: true
+  reject_symlinks: true
+
+p2_test_integrity:
+  enabled: true
+  forbid_test_deletion: true
+  forbid_assertion_reduction: true
+  forbid_added_skips: true
+  forbid_tautologies: true
+  escalate_test_only_patch: true
+
+p3_diff_budget:
+  max_files: 3
+  max_changed_lines: 60
+
+p4_dangerous_constructs:
+  enabled: true
+  run_overfit_guard: true
+  forbidden_calls:
+    - "eval"
+    - "exec"
+    - "compile"
+    - "__import__"
+    - "os.system"
+    - "os.symlink"
+    - "os.popen"
+    - "os.execl"
+    - "os.execle"
+    - "os.execlp"
+    - "os.execv"
+    - "os.execve"
+    - "os.execvp"
+    - "os.spawnl"
+    - "os.spawnv"
+    - "pty.spawn"
+  forbidden_modules:
+    - "socket"
+    - "http.client"
+    - "urllib.request"
+    - "requests"
+    - "httpx"
+    - "aiohttp"
+    - "ftplib"
+    - "smtplib"
+    - "telnetlib"
+    - "xmlrpc"
+  forbidden_env_reads:
+    - "os.environ"
+    - "os.getenv"
+    - "dotenv.dotenv_values"
+  forbid_subprocess_shell_true: true
+
+p5_secret_scan:
+  enabled: true
+
+p6_required_evidence:
+  min_reproduction_runs: 1
+  require_reproduced_baseline: true
+  require_passed_after_patch: true
+  require_lint_clean: true
+  require_typecheck_clean: true
+  require_network_disabled: true
+  require_read_only_rootfs: true
+
+p7_confidence:
+  min_confidence: 0.75
+
+p8_depth_limit:
+  max_depth: 1
+  blocked_actors:
+    - "aegis-ci[bot]"
+    - "aegis[bot]"
+    - "aegis-repair[bot]"
+  blocked_branch_prefixes:
+    - "aegis/"
+    - "refs/heads/aegis/"

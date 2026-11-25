@@ -1,0 +1,2 @@
+src/cmp.py:6:12: E711 Comparison to `None` should be `cond is None`
+Found 1 error.

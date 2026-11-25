@@ -1,0 +1,12 @@
+{
+  "key": "d4a890125b8f40770cade18d45eb85f8f188dfffee9c262cf0a4f06b1c23af6c",
+  "case_id": "ta_30_flaky_case_2",
+  "model_id": "replay-cassette-v1",
+  "parameter_hash": "a9636e1ad83fa94ab18777a9f8313c8d4c0638de56ded723343a0f922d867cc0",
+  "prompt_sha256": "0b8ab85410a87d742db1cc40160578a7e06051400dd11d25152a2bd48794287b",
+  "response_sha256": "5a8948d2ccf3d7f0ae7c28f608547e0fc24715f2947e9b01e418f0b8e90d39d9",
+  "raw_content": "{\"edits\":[],\"rationale\":\"Deterministic alternating flaky test 2 -> F5 REFUSE\"}",
+  "prompt_tokens": 320,
+  "completion_tokens": 95,
+  "recorded_at": "2026-11-25T00:00:00+00:00"
+}

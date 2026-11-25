@@ -1,0 +1,12 @@
+{
+  "key": "44dfb05419c11e697932a478a6958e15023a0da305b1e070c97f0b65e4a16a09",
+  "case_id": "ta_08_safe_divide",
+  "model_id": "replay-cassette-v1",
+  "parameter_hash": "a9636e1ad83fa94ab18777a9f8313c8d4c0638de56ded723343a0f922d867cc0",
+  "prompt_sha256": "db400e42917c99ffc49b4768993d1e16aa3d420b90de731f0ab369bc44f5c696",
+  "response_sha256": "a8a1c84d115af443911749e3f64a7f73199836df6c06b0b6cd79ea8ed5ad608a",
+  "raw_content": "{\"edits\":[{\"path\":\"pkg/core.py\",\"search\":\"def safe_divide(a: float, b: float, default: float = 0.0) -> float:\\n    return a / b\\n\",\"replace\":\"def safe_divide(a: float, b: float, default: float = 0.0) -> float:\\n    if b == 0:\\n        return default\\n    return a / b\\n\"}],\"rationale\":\"Guard division by zero with default\"}",
+  "prompt_tokens": 320,
+  "completion_tokens": 95,
+  "recorded_at": "2026-11-25T00:00:00+00:00"
+}

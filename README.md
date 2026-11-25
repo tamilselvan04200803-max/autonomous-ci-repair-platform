@@ -7,13 +7,15 @@
 **Autonomous CI repair that publishes nothing until an independent evidence gate certifies the patch.**
 
 [![CI](https://github.com/tamilselvan04200803-max/autonomous-ci-repair-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/tamilselvan04200803-max/autonomous-ci-repair-platform/actions/workflows/ci.yml)
+[![Aegis-CI](https://github.com/tamilselvan04200803-max/autonomous-ci-repair-platform/actions/workflows/aegis-ci.yml/badge.svg)](https://github.com/tamilselvan04200803-max/autonomous-ci-repair-platform/actions/workflows/aegis-ci.yml)
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-1b3a5c)](LICENSE)
 [![XERJ Corpus Hub Contributor](https://hub.xerj.org/contributors/tamilselvan04200803-max/badge.svg)](https://hub.xerj.org/contributors/tamilselvan04200803-max)
 [![Attestations: in-toto + DSSE](https://img.shields.io/badge/attestations-in--toto%20%2B%20DSSE-b23a1e)](#the-proof-bundle)
 [![Runner: zero deps](https://img.shields.io/badge/runner-zero%20dependencies-c8862a)](runner/aegis.mjs)
 [![Node.js: >=20](https://img.shields.io/badge/node-%3E%3D20.0.0-339933?logo=node.js)](package.json)
+[![Python: >=3.11](https://img.shields.io/badge/python-%3E%3D3.11-3776AB?logo=python)](pyproject.toml)
 
-[Quickstart](#quickstart) · [How it works](#how-it-works) · [Architecture & Stack](#system-architecture) · [Connect GitHub](#connect-a-github-repository) · [Proof bundle](#the-proof-bundle) · [Security](SECURITY.md) · [Decisions](docs/decisions)
+[Quickstart](#quickstart) · [Screenshots](#screenshots) · [How it works](#how-it-works) · [Architecture & Stack](#system-architecture) · [Aegis-CI Control Plane](#aegis-ci-python-control-plane) · [Proof bundle](#the-proof-bundle) · [Security](SECURITY.md)
 
 </div>
 
@@ -44,6 +46,18 @@ Only then is the proof bundle **signed** (Ed25519, DSSE envelope, in-toto Statem
 | Interrupted runs / infra | exit 137, OOMKilled, runner shutdown, rate limits | 🚫 escalates |
 
 Refusing is a feature. A flaky test with no deterministic assertion is **never** patched.
+
+## Screenshots
+
+| Landing & Evidence Gate (`/`) | Deterministic Failure Analyser (`/analyze`) |
+| :---: | :---: |
+| ![Aegis Forge Home](public/images/screenshots/home.png) | ![Aegis Forge Analyser](public/images/screenshots/analyze.png) |
+
+| 16-Stage Pipeline (`/pipeline`) | Proof Bundle & Attestation (`/proof-bundle`) |
+| :---: | :---: |
+| ![Aegis Forge Pipeline](public/images/screenshots/pipeline.png) | ![Aegis Forge Proof Bundle](public/images/screenshots/proof-bundle.png) |
+
+> Architecture & Trust Model (`/architecture`): [view screenshot](public/images/screenshots/architecture.png)
 
 ## Quickstart
 
@@ -214,6 +228,20 @@ npm run typecheck                # strict TypeScript compiler validation
 npm run lint                     # ESLint checks
 npm run build                    # Next.js production build verification
 ./scripts/e2e-local.sh           # full loop against a local server
+```
+
+## Aegis-CI Python Control Plane
+
+The Python control plane (`aegis/`) pairs with the `agentsentinel` verification kernel to provide deterministic triage (`pytest`, `ruff`, `mypy`, `pip`, `k`-rerun flake detection), two-phase sandboxed reproduction, AST code graph + read-only MCP v2 server, YAML-configured Policy Gate (`P1..P8`), guarded GitHub delivery (`refs/heads/aegis/*`), and replayable Tier A + Adversarial benchmarks.
+
+- Architecture & generated benchmark tables: [`docs/AEGIS_CI.md`](docs/AEGIS_CI.md)
+- Machine-readable replay results: [`benchmarks/results/tier_a_replay.json`](benchmarks/results/tier_a_replay.json)
+- Claims & verification commands: [`CLAIMS.md`](CLAIMS.md)
+- Threat model & honest limits: [`SECURITY.md`](SECURITY.md)
+
+```bash
+make bench-replay                # validate 42 Tier A + 13 Adversarial cases & regenerate report
+make verify                      # ruff, mypy --strict, pytest, secret scan
 ```
 
 ## Contributing

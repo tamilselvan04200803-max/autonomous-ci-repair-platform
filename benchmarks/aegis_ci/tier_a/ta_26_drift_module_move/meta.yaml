@@ -1,0 +1,8 @@
+id: ta_26_drift_module_move
+category: dependency_drift
+failure_class: F4
+expected_outcome: FIX
+visible_cmd: pytest -q
+target_files:
+- pkg/client.py
+description: Update moved import vendor_sdk.legacy -> vendor_sdk.core

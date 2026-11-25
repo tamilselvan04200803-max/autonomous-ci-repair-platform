@@ -1,0 +1,7 @@
+================================== FAILURES ===================================
+______________________________ test_async_fetch ________________________________
+tests/test_async.py:19: in test_async_fetch
+    assert res.status == 200
+E   AssertionError: assert 404 == 200
+FAILED tests/test_async.py::test_async_fetch - AssertionError
+1 failed in 0.45s

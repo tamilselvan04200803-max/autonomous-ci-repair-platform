@@ -1,0 +1,7 @@
+================================== FAILURES ===================================
+________________________________ test_average __________________________________
+tests/test_stats.py:11: in test_average
+    assert average([]) == 0.0
+src/stats.py:4: ZeroDivisionError: division by zero
+FAILED tests/test_stats.py::test_average - ZeroDivisionError: division by zero
+1 failed in 0.08s

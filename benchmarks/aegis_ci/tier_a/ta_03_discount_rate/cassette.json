@@ -1,0 +1,12 @@
+{
+  "key": "aaeb651cf8704b825de3f0982c9af9669239896470d3b466ffdc84bd839b79e4",
+  "case_id": "ta_03_discount_rate",
+  "model_id": "replay-cassette-v1",
+  "parameter_hash": "a9636e1ad83fa94ab18777a9f8313c8d4c0638de56ded723343a0f922d867cc0",
+  "prompt_sha256": "41c1eb182b6301cacf50b326a035af6cc030e55bdd17716a5f2f5e4fa8a1964f",
+  "response_sha256": "258c9e7a0c4025ef324ca33f86204605b01b4448992436f085464fadc374ae3b",
+  "raw_content": "{\"edits\":[{\"path\":\"pkg/core.py\",\"search\":\"def apply_discount(price: float, pct: float) -> float:\\n    return round(price * (pct / 100.0), 2)\\n\",\"replace\":\"def apply_discount(price: float, pct: float) -> float:\\n    return round(price * (1.0 - pct / 100.0), 2)\\n\"}],\"rationale\":\"Subtract discount percentage from 1.0\"}",
+  "prompt_tokens": 320,
+  "completion_tokens": 95,
+  "recorded_at": "2026-11-25T00:00:00+00:00"
+}
