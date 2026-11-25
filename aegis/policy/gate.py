@@ -1,138 +1,185 @@
-"""Policy gate evaluator for Aegis-CI.
-
-Evaluates rules P1..P8 deterministically in fixed order to determine
-whether a repair patch should be allowed, denied, or escalated.
-"""
+"""Deterministic Policy Gate evaluating rules P1..P8 against every candidate repair."""
 
 from __future__ import annotations
 
-from pathlib import Path
-from typing import Any, TypedDict
+import ast
+import fnmatch
+import unicodedata
+from collections import Counter
+from dataclasses import dataclass, field
+from pathlib import Path, PurePosixPath
+from typing import TYPE_CHECKING
+
+from agentsentinel.verification.overfit_guard import (
+    OverfitPolicyError,
+    SourceAnalysisLimitError,
+    verify_not_overfitted,
+)
+from pydantic import BaseModel, ConfigDict
 
 from aegis.domain.models import (
+    Diagnosis,
     FailureClass,
+    FailureEvent,
+    Patch,
     PolicyDecision,
     PolicyVerdict,
+    VerificationReport,
 )
+from aegis.graph.frontend import normalize_rel_path
+from aegis.policy.ast_test_integrity import check_test_integrity, is_test_file_path
+from aegis.triage.redactor import detect_secret_labels
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping, Sequence
+
+    from aegis.policy.config import PolicyConfig
 
 
-# PolicyContext: shared context passed to gate evaluation (P1..P8).
-# Used by both PolicyGate.evaluate() and the e2e tests.
-class PolicyContext(TypedDict):
-    repo_root: str
-    event: Any
-    diagnosis: Any
-    patch: Any
-    verification: Any
-    post_patch_sources: dict[str, str]
-    pre_patch_sources: dict[str, str]
+@dataclass(frozen=True, slots=True)
+class PolicyContext:
+    """Inputs evaluated by PolicyGate for a candidate patch."""
+
+    repo_root: Path
+    event: FailureEvent
+    diagnosis: Diagnosis
+    patch: Patch
+    verification: VerificationReport
+    post_patch_sources: Mapping[str, str] = field(default_factory=dict)
+    pre_patch_sources: Mapping[str, str] | None = None
+    repair_depth: int = 0
 
 
-# PolicyEvaluationResult: result returned from a single rule evaluation.
-PolicyEvaluationResult = dict[str, Any]
+class PolicyEvaluationResult(BaseModel):
+    """Aggregate verdict plus itemized PolicyDecision rows for P1..P8."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    verdict: PolicyVerdict
+    decisions: tuple[PolicyDecision, ...]
+
+    @property
+    def by_rule(self) -> dict[str, PolicyDecision]:
+        return {d.rule_id: d for d in self.decisions}
 
 
-def normalize_rel_path(p: str) -> str:
-    """Normalize a relative path by removing leading ./ or /."""
-    if p.startswith("./"):
-        p = p[2:]
-    if p.startswith("/"):
-        p = p[1:]
-    return p
+def _match_glob(rel_path: str, pattern: str) -> bool:
+    norm = normalize_rel_path(rel_path)
+    pat = normalize_rel_path(pattern)
+    if pat.endswith("/**"):
+        prefix = pat[:-3]
+        return norm == prefix or norm.startswith(f"{prefix}/")
+    if pat.startswith("**/"):
+        sub = pat[3:]
+        if fnmatch.fnmatch(norm, sub) or fnmatch.fnmatch(PurePosixPath(norm).name, sub):
+            return True
+    if "/" not in pat and fnmatch.fnmatch(PurePosixPath(norm).name, pat):
+        return True
+    return fnmatch.fnmatch(norm, pat)
 
 
-def is_test_file_path(p: str) -> bool:
-    """Check if a path is a test file (ends with _test.py or is in tests/ directory."""
-    return p.endswith("_test.py") or "/tests/" in p
+def _has_homoglyph_or_control(rel_path: str) -> bool:
+    if not rel_path.isascii():
+        return True
+    return any(unicodedata.category(ch) == "Cf" for ch in rel_path)
 
 
-def _get_repo_root(context: Any) -> str:
-    """Extract repo_root from PolicyContext (supports object or dict)."""
-    if hasattr(context, "repo_root") and not isinstance(context, dict):
-        return str(context.repo_root)
-    return context.get("repo_root", ".") if isinstance(context, dict) else "."
+def _dotted_name(node: ast.AST) -> str:
+    if isinstance(node, ast.Name):
+        return node.id
+    if isinstance(node, ast.Attribute):
+        prefix = _dotted_name(node.value)
+        return f"{prefix}.{node.attr}" if prefix else node.attr
+    return ""
 
 
-def _get_diagnosis(context: Any) -> Any:
-    """Extract diagnosis from PolicyContext (supports object or dict)."""
-    if hasattr(context, "diagnosis") and not isinstance(context, dict):
-        return context.diagnosis
-    return context.get("diagnosis", {}) if isinstance(context, dict) else {}
+def _scan_dangerous_hits(
+    source: str,
+    *,
+    forbidden_calls: Sequence[str],
+    forbidden_modules: Sequence[str],
+    forbidden_env_reads: Sequence[str],
+    forbid_shell_true: bool,
+) -> Counter[str]:
+    counts: Counter[str] = Counter()
+    if not source.strip():
+        return counts
+    try:
+        tree = ast.parse(source)
+    except SyntaxError:
+        counts["syntax_error"] += 1
+        return counts
+
+    mod_set = set(forbidden_modules)
+    call_set = set(forbidden_calls)
+    env_set = set(forbidden_env_reads)
+
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            for alias in node.names:
+                for mod in mod_set:
+                    if alias.name == mod or alias.name.startswith(f"{mod}."):
+                        counts[f"import:{mod}"] += 1
+        elif isinstance(node, ast.ImportFrom) and node.module:
+            for mod in mod_set:
+                if node.module == mod or node.module.startswith(f"{mod}."):
+                    counts[f"import:{mod}"] += 1
+        elif isinstance(node, ast.Call):
+            dotted = _dotted_name(node.func)
+            tail = dotted.rsplit(".", 1)[-1]
+            if dotted in call_set or (tail in call_set and "." not in tail):
+                counts[f"call:{dotted}"] += 1
+            if dotted in env_set:
+                counts[f"env:{dotted}"] += 1
+            for mod in mod_set:
+                if dotted == mod or dotted.startswith(f"{mod}."):
+                    counts[f"net:{dotted}"] += 1
+            if forbid_shell_true and (dotted.startswith("subprocess.") or tail == "Popen"):
+                for kw in node.keywords:
+                    if (
+                        kw.arg == "shell"
+                        and isinstance(kw.value, ast.Constant)
+                        and kw.value.value is True
+                    ):
+                        counts["subprocess:shell=True"] += 1
+        elif isinstance(node, ast.Attribute):
+            dotted = _dotted_name(node)
+            if dotted in env_set:
+                counts[f"env:{dotted}"] += 1
+
+    return counts
 
 
-def _get_patch(context: Any) -> Any:
-    """Extract patch from PolicyContext (supports object or dict)."""
-    if hasattr(context, "patch") and not isinstance(context, dict):
-        return context.patch
-    return context.get("patch", {}) if isinstance(context, dict) else {}
-
-
-def _get_pre_patch_sources(context: Any) -> dict[str, str]:
-    """Extract pre_patch_sources from PolicyContext (supports object or dict)."""
-    if hasattr(context, "pre_patch_sources") and not isinstance(context, dict):
-        return context.pre_patch_sources
-    return context.get("pre_patch_sources", {}) if isinstance(context, dict) else {}
-
-
-def _get_post_patch_sources(context: Any) -> dict[str, str]:
-    """Extract post_patch_sources from PolicyContext (supports object or dict)."""
-    if hasattr(context, "post_patch_sources") and not isinstance(context, dict):
-        return context.post_patch_sources
-    return context.get("post_patch_sources", {}) if isinstance(context, dict) else {}
-
-
-def _get_verification(context: Any) -> Any:
-    """Extract verification from PolicyContext (supports object or dict)."""
-    if hasattr(context, "verification") and not isinstance(context, dict):
-        return context.verification
-    return context.get("verification", {}) if isinstance(context, dict) else {}
+def _added_diff_lines(unified_diff: str) -> str:
+    lines: list[str] = []
+    for raw in unified_diff.splitlines():
+        if raw.startswith("+") and not raw.startswith("+++ "):
+            lines.append(raw[1:])
+    return "\n".join(lines)
 
 
 class PolicyGate:
     """Evaluates rules P1..P8 deterministically in fixed order."""
 
-    def __init__(self, config: Any) -> None:
+    def __init__(self, config: PolicyConfig) -> None:
         self.config = config
-        # Map legacy attribute names to current config schema (P2-P8)
-        self._p2_cfg = (
-            config.p2_test_integrity
-            if hasattr(config, "p2_test_integrity")
-            else getattr(config, "p2_diff_budget", None)
-        )
-        self._p3_cfg = getattr(config, "p3_diff_budget", None)
-        # P4 config: new schema uses p4_dangerous_constructs; fall back to p4_timeout
-        self._p4_cfg = (
-            getattr(config, "p4_dangerous_constructs", None)
-            or getattr(config, "p4_timeout", None)
-        )
-        self._p5_cfg = getattr(config, "p5_verbosity", None)
-        self._p6_cfg = getattr(config, "p6_verbosity", None)
-        self._p7_cfg = getattr(config, "p7_verbosity", None)
-        self._p8_cfg = getattr(config, "p8_verbosity", None)
 
     def _collect_source_maps(
         self,
-        context: Any,
+        context: PolicyContext,
     ) -> tuple[dict[str, str], dict[str, str]]:
         pre_map: dict[str, str] = {}
         post_map: dict[str, str] = {}
-        provided_pre = _get_pre_patch_sources(context)
+        provided_pre = context.pre_patch_sources or {}
 
-        # Handle both dict and object formats for patch
-        patch_obj = _get_patch(context)
-        if hasattr(patch_obj, "changed_files"):
-            all_rels = {normalize_rel_path(p) for p in patch_obj.changed_files}
-        elif isinstance(patch_obj, dict):
-            all_rels = {normalize_rel_path(p) for p in patch_obj.get("changed_files", [])}
-        else:
-            all_rels = set()
+        all_rels = {normalize_rel_path(p) for p in context.patch.changed_files}
         all_rels.update(normalize_rel_path(p) for p in context.post_patch_sources)
 
         for rel in sorted(all_rels):
             if rel in provided_pre:
                 pre_src = provided_pre[rel]
             else:
-                path = Path(context.repo_root) / rel
+                path = context.repo_root / rel
                 pre_src = (
                     path.read_text(encoding="utf-8", errors="replace")
                     if path.is_file() and not path.is_symlink()
@@ -146,78 +193,87 @@ class PolicyGate:
                 post_map[rel] = pre_src
         return pre_map, post_map
 
-    def _eval_p1(self, context: Any) -> PolicyDecision:
+    def _eval_p1(self, context: PolicyContext) -> PolicyDecision:
         cfg = self.config.p1_paths
-        repo_root = _get_repo_root(context)
-        diagnosis_obj = _get_diagnosis(context)
-        patch_obj = _get_patch(context)
-        provided_pre = _get_pre_patch_sources(context)
-
         allow_lock = (
             cfg.allow_lockfiles_for_f4
-            and diagnosis_obj.failure_class == FailureClass.F4_DEPENDENCY_DRIFT
+            and context.diagnosis.failure_class == FailureClass.F4_DEPENDENCY_DRIFT
         )
         violations: list[str] = []
-        root_resolved = Path(repo_root).resolve()
+        root_resolved = context.repo_root.resolve()
 
-        # Handle both dict and object formats for patch
-        changed = [
-            normalize_rel_path(p)
-            for p in (patch_obj.changed_files if hasattr(patch_obj, "changed_files") else patch_obj.get("changed_files", []))
-        ]
-        for raw in changed:
-            rel = raw
-            parts = __import__("pathlib").PurePosixPath(rel).parts
+        for raw in context.patch.changed_files:
+            rel = normalize_rel_path(raw)
+            parts = PurePosixPath(rel).parts
             if not parts or raw.startswith("/") or ".." in parts:
                 violations.append(f"traversal/absolute path rejected: {raw}")
                 continue
-            # Note: homoglyph and control checks simplified for brevity
-            if getattr(cfg, "reject_symlinks", False):
-                candidate = Path(repo_root) / rel
-                cur = Path(repo_root)
+            if cfg.reject_non_ascii_paths and _has_homoglyph_or_control(rel):
+                violations.append(f"non-ASCII/homoglyph path rejected: {rel}")
+                continue
+            if cfg.reject_symlinks:
+                candidate = context.repo_root / rel
+                cur = context.repo_root
                 symlink_hit = candidate.is_symlink()
                 for part in parts:
                     cur = cur / part
-                    if candidate.is_symlink():
+                    if cur.is_symlink():
                         symlink_hit = True
-                if symlink_hit and getattr(cfg, "reject_symlinks", False):
-                    violations.append(f"symlink rejected: {raw}")
+                        break
+                if symlink_hit or (
+                    candidate.exists() and not candidate.resolve().is_relative_to(root_resolved)
+                ):
+                    violations.append(f"symlink/escape path rejected: {rel}")
                     continue
-            if getattr(cfg, "reject_non_ascii_paths", False):
-                if any(ord(c) > 127 for c in rel):
-                    violations.append(f"non-ASCII/homoglyph path rejected: {rel}")
-                    continue
-            if getattr(cfg, "reject_lockfiles", False) and rel.endswith((".lock", ".toml")):
-                violations.append(f"lockfile rejected: {raw}")
+
+            is_lock = any(_match_glob(rel, g) for g in cfg.lockfile_globs)
+            if is_lock:
+                if not allow_lock:
+                    violations.append(f"lockfile edit denied outside F4: {rel}")
                 continue
+
+            if any(_match_glob(rel, g) for g in cfg.denied_globs):
+                violations.append(f"protected path denied: {rel}")
+
         if violations:
             return PolicyDecision(
                 rule_id="P1",
                 verdict=PolicyVerdict.DENY,
-                reason="; ".join(violations),
-                details=tuple(changed),
+                reason=violations[0],
+                details=tuple(violations),
             )
-        # P1 allows: check lockfile exception for F4
-        if allow_lock and any(rel.endswith((".lock", ".toml")) for rel in changed):
-            pass  # lockfiles allowed for F4
         return PolicyDecision(
             rule_id="P1",
             verdict=PolicyVerdict.ALLOW,
-            reason="Path validation passed",
-            details=tuple(changed),
+            reason="All touched paths permitted",
         )
 
-    def _eval_p2(self, context: Any) -> PolicyDecision:
-        cfg = self._p2_cfg or self.config.p2_test_integrity
-        patch_obj = _get_patch(context)
-        # Handle both dict and object formats for patch
-        changed = [
-            normalize_rel_path(p)
-            for p in (patch_obj.changed_files if hasattr(patch_obj, "changed_files") else patch_obj.get("changed_files", []))
-        ]
-        if cfg.escalate_test_only_patch and changed and all(
-            is_test_file_path(p) for p in changed
-        ):
+    def _eval_p2(
+        self,
+        context: PolicyContext,
+        pre_map: Mapping[str, str],
+        post_map: Mapping[str, str],
+    ) -> PolicyDecision:
+        cfg = self.config.p2_test_integrity
+        if not cfg.enabled:
+            return PolicyDecision(rule_id="P2", verdict=PolicyVerdict.ALLOW, reason="Disabled")
+
+        violations, _ = check_test_integrity(
+            pre_sources=pre_map,
+            post_sources=post_map,
+            config=cfg,
+        )
+        if violations:
+            details = tuple(f"{v.file_path}: {v.rule_detail}" for v in violations)
+            return PolicyDecision(
+                rule_id="P2",
+                verdict=PolicyVerdict.DENY,
+                reason=details[0],
+                details=details,
+            )
+
+        changed = [normalize_rel_path(p) for p in context.patch.changed_files]
+        if cfg.escalate_test_only_patch and changed and all(is_test_file_path(p) for p in changed):
             return PolicyDecision(
                 rule_id="P2",
                 verdict=PolicyVerdict.ESCALATE,
@@ -229,269 +285,203 @@ class PolicyGate:
             rule_id="P2",
             verdict=PolicyVerdict.ALLOW,
             reason="AST test integrity preserved",
-            details=tuple(changed),
         )
 
-    def _eval_p3(self, context: Any) -> PolicyDecision:
+    def _eval_p3(self, context: PolicyContext) -> PolicyDecision:
         cfg = self.config.p3_diff_budget
-        patch_obj = _get_patch(context)
-        # Handle both dict and object formats for patch
-        changed = [
-            normalize_rel_path(p)
-            for p in (patch_obj.changed_files if hasattr(patch_obj, "changed_files") else patch_obj.get("changed_files", []))
-        ]
-        file_count = len(changed)
-        # Handle both dict and object formats for added/deleted lines
-        added = getattr(patch_obj, "added_lines", 0) if hasattr(patch_obj, "added_lines") else (
-            patch_obj.get("added_lines", 0) if isinstance(patch_obj, dict) else 0
-        )
-        deleted = getattr(patch_obj, "deleted_lines", 0) if hasattr(patch_obj, "deleted_lines") else (
-            patch_obj.get("deleted_lines", 0) if isinstance(patch_obj, dict) else 0
-        )
+        file_count = len(context.patch.changed_files)
+        line_count = context.patch.added_lines + context.patch.deleted_lines
         reasons: list[str] = []
         if file_count > cfg.max_files:
             reasons.append(f"Changed files {file_count} exceeds max {cfg.max_files}")
-        if (added + deleted) > cfg.max_changed_lines:
-            reasons.append(f"Changed lines {added + deleted} exceeds max {cfg.max_changed_lines}")
+        if line_count > cfg.max_changed_lines:
+            reasons.append(f"Changed lines {line_count} exceeds max {cfg.max_changed_lines}")
         if reasons:
             return PolicyDecision(
                 rule_id="P3",
                 verdict=PolicyVerdict.DENY,
                 reason="; ".join(reasons),
-                details=(str(file_count), str(added), str(deleted)),
+                details=tuple(reasons),
             )
         return PolicyDecision(
             rule_id="P3",
             verdict=PolicyVerdict.ALLOW,
-            reason="Diff budget within limits",
-            details=(str(file_count), str(added), str(deleted)),
+            reason=f"Diff budget ok ({file_count} files, {line_count} lines)",
         )
 
-    def _eval_p4(self, context: Any) -> PolicyDecision:
-        cfg = self._p4_cfg or getattr(self.config, "p4_dangerous_constructs", None)
-        verification_obj = _get_verification(context)
+    def _eval_p4(
+        self,
+        context: PolicyContext,
+        pre_map: Mapping[str, str],
+        post_map: Mapping[str, str],
+    ) -> PolicyDecision:
+        cfg = self.config.p4_dangerous_constructs
+        if not cfg.enabled:
+            return PolicyDecision(rule_id="P4", verdict=PolicyVerdict.ALLOW, reason="Disabled")
 
-        passed_after_patch = (
-            verification_obj.passed_after_patch
-            if hasattr(verification_obj, "passed_after_patch")
-            else verification_obj.get("passed_after_patch", False) if isinstance(verification_obj, dict) else False
-        )
-        exit_codes_before = (
-            verification_obj.exit_codes_before
-            if hasattr(verification_obj, "exit_codes_before")
-            else verification_obj.get("exit_codes_before", (1,)) if isinstance(verification_obj, dict) else (1,)
-        )
-        exit_codes_after = (
-            verification_obj.exit_codes_after
-            if hasattr(verification_obj, "exit_codes_after")
-            else verification_obj.get("exit_codes_after", (0,)) if isinstance(verification_obj, dict) else (0,)
-        )
-        # Check network disabled: from verification first, then config fallback
-        network_disabled = (
-            verification_obj.network_disabled
-            if hasattr(verification_obj, "network_disabled")
-            else verification_obj.get("network_disabled", True) if isinstance(verification_obj, dict)
-            else (cfg.forbid_subprocess_shell_true if cfg else True)
-        )
-        # Check read-only rootfs: from verification first, then config fallback
-        read_only_rootfs = (
-            verification_obj.read_only_rootfs
-            if hasattr(verification_obj, "read_only_rootfs")
-            else verification_obj.get("read_only_rootfs", True) if isinstance(verification_obj, dict)
-            else True
-        )
+        findings: list[str] = []
+        for rel in sorted(pre_map.keys() | post_map.keys()):
+            if not rel.endswith(".py"):
+                continue
+            pre_hits = _scan_dangerous_hits(
+                pre_map.get(rel, ""),
+                forbidden_calls=cfg.forbidden_calls,
+                forbidden_modules=cfg.forbidden_modules,
+                forbidden_env_reads=cfg.forbidden_env_reads,
+                forbid_shell_true=cfg.forbid_subprocess_shell_true,
+            )
+            post_hits = _scan_dangerous_hits(
+                post_map.get(rel, ""),
+                forbidden_calls=cfg.forbidden_calls,
+                forbidden_modules=cfg.forbidden_modules,
+                forbidden_env_reads=cfg.forbidden_env_reads,
+                forbid_shell_true=cfg.forbid_subprocess_shell_true,
+            )
+            delta = post_hits - pre_hits
+            for key, count in sorted(delta.items()):
+                if count > 0:
+                    findings.append(f"{rel}: introduced forbidden construct {key} (x{count})")
 
-        if not passed_after_patch:
+        if findings:
             return PolicyDecision(
                 rule_id="P4",
                 verdict=PolicyVerdict.DENY,
-                reason="Post-patch verification did not pass",
-                details=(),
+                reason=findings[0],
+                details=tuple(findings),
             )
-        if any(c != 0 for c in exit_codes_before):
-            return PolicyDecision(
-                rule_id="P4",
-                verdict=PolicyVerdict.DENY,
-                reason="Pre-patch exit codes indicate failure",
-                details=(),
-            )
-        if not network_disabled:
-            return PolicyDecision(
-                rule_id="P4",
-                verdict=PolicyVerdict.DENY,
-                reason="Network not disabled during sandbox execution",
-                details=(),
-            )
-        if not read_only_rootfs:
-            return PolicyDecision(
-                rule_id="P4",
-                verdict=PolicyVerdict.DENY,
-                reason="Read-only rootfs not enforced",
-                details=(),
-            )
+
+        if cfg.run_overfit_guard and context.post_patch_sources:
+            try:
+                verify_not_overfitted(
+                    workspace_root=context.repo_root,
+                    pre_patch_sources=pre_map,
+                    post_patch_sources=post_map,
+                    raw_diff=context.patch.unified_diff,
+                )
+            except (OverfitPolicyError, SourceAnalysisLimitError) as exc:
+                return PolicyDecision(
+                    rule_id="P4",
+                    verdict=PolicyVerdict.DENY,
+                    reason=f"Overfit/hygiene guard rejected patch: {exc}",
+                    details=(str(exc),),
+                )
+
         return PolicyDecision(
             rule_id="P4",
             verdict=PolicyVerdict.ALLOW,
-            reason="Sandbox verification passed",
-            details=(),
+            reason="No dangerous AST constructs or overfitting detected",
         )
 
-    def _eval_p5(self, context: Any) -> PolicyDecision:
-        cfg = self._p5_cfg or getattr(self.config, "p5_verbosity", None)
-        verification_obj = _get_verification(context)
-
-        passed_after_patch = (
-            verification_obj.passed_after_patch
-            if hasattr(verification_obj, "passed_after_patch")
-            else verification_obj.get("passed_after_patch", False) if isinstance(verification_obj, dict) else False
-        )
-        if not passed_after_patch:
+    def _eval_p5(self, context: PolicyContext) -> PolicyDecision:
+        if not self.config.p5_secret_scan.enabled:
+            return PolicyDecision(rule_id="P5", verdict=PolicyVerdict.ALLOW, reason="Disabled")
+        added = _added_diff_lines(context.patch.unified_diff)
+        labels = detect_secret_labels(added)
+        if labels:
             return PolicyDecision(
                 rule_id="P5",
                 verdict=PolicyVerdict.DENY,
-                reason="Post-patch verification did not pass",
-                details=(),
+                reason=f"Secret-shaped tokens detected in added diff lines: {', '.join(labels)}",
+                details=labels,
             )
         return PolicyDecision(
             rule_id="P5",
             verdict=PolicyVerdict.ALLOW,
-            reason="Post-patch verification check P5",
-            details=(),
+            reason="Zero secrets detected in added lines",
         )
 
-    def _eval_p6(self, context: Any) -> PolicyDecision:
-        cfg = self._p6_cfg or getattr(self.config, "p6_verbosity", None)
-        verification_obj = _get_verification(context)
+    def _eval_p6(self, context: PolicyContext) -> PolicyDecision:
+        cfg = self.config.p6_required_evidence
+        rep = context.verification
+        missing: list[str] = []
+        if rep.reproduction_runs < cfg.min_reproduction_runs:
+            missing.append(
+                f"reproduction_runs={rep.reproduction_runs} < {cfg.min_reproduction_runs}"
+            )
+        if cfg.require_reproduced_baseline and rep.reproduced_failures < 1:
+            missing.append("baseline failure was not reproduced")
+        if cfg.require_passed_after_patch and not rep.passed_after_patch:
+            missing.append("tests did not pass after patch")
+        if cfg.require_lint_clean and not rep.lint_clean:
+            missing.append("lint check not clean")
+        if cfg.require_typecheck_clean and not rep.typecheck_clean:
+            missing.append("typecheck not clean")
+        if cfg.require_network_disabled and not rep.network_disabled:
+            missing.append("verification ran without network disabled")
+        if cfg.require_read_only_rootfs and not rep.read_only_rootfs:
+            missing.append("verification ran without read-only rootfs")
 
-        lint_clean = (
-            verification_obj.lint_clean
-            if hasattr(verification_obj, "lint_clean")
-            else verification_obj.get("lint_clean", True) if isinstance(verification_obj, dict) else True
-        )
-        if not lint_clean:
+        if missing:
             return PolicyDecision(
                 rule_id="P6",
                 verdict=PolicyVerdict.DENY,
-                reason="Lint check failed",
-                details=(),
+                reason=missing[0],
+                details=tuple(missing),
             )
         return PolicyDecision(
             rule_id="P6",
             verdict=PolicyVerdict.ALLOW,
-            reason="Lint check passed",
-            details=(),
+            reason="Verification evidence complete",
         )
 
-    def _eval_p7(self, context: Any) -> PolicyDecision:
-        cfg = self._p7_cfg or getattr(self.config, "p7_verbosity", None)
-        verification_obj = _get_verification(context)
-
-        typecheck_clean = (
-            verification_obj.typecheck_clean
-            if hasattr(verification_obj, "typecheck_clean")
-            else verification_obj.get("typecheck_clean", True) if isinstance(verification_obj, dict) else True
-        )
-        if not typecheck_clean:
+    def _eval_p7(self, context: PolicyContext) -> PolicyDecision:
+        min_conf = self.config.p7_confidence.min_confidence
+        conf = context.diagnosis.confidence
+        if conf < min_conf:
             return PolicyDecision(
                 rule_id="P7",
-                verdict=PolicyVerdict.DENY,
-                reason="Type check failed",
-                details=(),
+                verdict=PolicyVerdict.ESCALATE,
+                reason=f"Confidence {conf:.2f} < threshold {min_conf:.2f} (diagnosis-only)",
             )
         return PolicyDecision(
             rule_id="P7",
             verdict=PolicyVerdict.ALLOW,
-            reason="Type check passed",
-            details=(),
+            reason=f"Confidence {conf:.2f} >= {min_conf:.2f}",
         )
 
-    def _eval_p8(self, context: Any) -> PolicyDecision:
-        cfg = self._p8_cfg or getattr(self.config, "p8_verbosity", None)
-        diagnosis_obj = _get_diagnosis(context)
+    def _eval_p8(self, context: PolicyContext) -> PolicyDecision:
+        cfg = self.config.p8_depth_limit
+        reasons: list[str] = []
+        if context.repair_depth > cfg.max_depth:
+            reasons.append(f"repair_depth {context.repair_depth} exceeds max {cfg.max_depth}")
+        actor_lower = context.event.actor.strip().lower()
+        if any(actor_lower == bot.lower() for bot in cfg.blocked_actors):
+            reasons.append(f"self-repair loop actor blocked: {context.event.actor}")
+        branch = context.event.base_branch.strip()
+        if any(branch.startswith(pfx) for pfx in cfg.blocked_branch_prefixes):
+            reasons.append(f"aegis branch recursion blocked: {branch}")
 
-        # Handle both dict and object formats for diagnosis
-        failure_class = (
-            diagnosis_obj.failure_class
-            if hasattr(diagnosis_obj, "failure_class")
-            else diagnosis_obj.get("failure_class", "") if isinstance(diagnosis_obj, dict) else ""
-        )
-        if failure_class in ("F2_SECURITY_VIOLATION", "F3_INFRASTRUCTURE_FAILURE"):
+        if reasons:
             return PolicyDecision(
                 rule_id="P8",
-                verdict=PolicyVerdict.ESCALATE,
-                reason=f"Critical failure class {failure_class} requires human review",
-                details=(),
+                verdict=PolicyVerdict.DENY,
+                reason=reasons[0],
+                details=tuple(reasons),
             )
         return PolicyDecision(
             rule_id="P8",
             verdict=PolicyVerdict.ALLOW,
-            reason="Failure class does not require escalation",
-            details=(),
+            reason="Repair depth and actor within limit",
         )
 
-    def evaluate(
-        self,
-        context: Any,
-    ) -> PolicyDecision:
-        """Evaluate all rules P1..P8 in fixed order and return final verdict.
-
-        Args:
-            context: PolicyContext object or dict with the following attributes/keys:
-                - repo_root: path-like root of the repository
-                - event: failure event
-                - diagnosis: failure diagnosis
-                - patch: patch dict or object with changed_files
-                - verification: VerificationReport object or dict
-                - pre_patch_sources: dict of pre-patch source files (optional)
-                - post_patch_sources: dict of post-patch source files (optional)
-
-        Returns:
-            PolicyDecision with verdict and reason
-        """
-        # P1: Path validation
-        p1_result = self._eval_p1(context)
-        if p1_result.verdict != PolicyVerdict.ALLOW:
-            return p1_result
-
-        # P2: Diff budget
-        p2_result = self._eval_p2(context)
-        if p2_result.verdict != PolicyVerdict.ALLOW:
-            return p2_result
-
-        # P3: Diff integrity
-        p3_result = self._eval_p3(context)
-        if p3_result.verdict != PolicyVerdict.ALLOW:
-            return p3_result
-
-        # P4: Sandbox verification
-        p4_result = self._eval_p4(context)
-        if p4_result.verdict != PolicyVerdict.ALLOW:
-            return p4_result
-
-        # P5: Post-patch verification re-check
-        p5_result = self._eval_p5(context)
-        if p5_result.verdict != PolicyVerdict.ALLOW:
-            return p5_result
-
-        # P6: Lint check
-        p6_result = self._eval_p6(context)
-        if p6_result.verdict != PolicyVerdict.ALLOW:
-            return p6_result
-
-        # P7: Type check
-        p7_result = self._eval_p7(context)
-        if p7_result.verdict != PolicyVerdict.ALLOW:
-            return p7_result
-
-        # P8: Critical failure escalation
-        p8_result = self._eval_p8(context)
-        if p8_result.verdict != PolicyVerdict.ALLOW:
-            return p8_result
-
-        # All rules passed
-        return PolicyDecision(
-            rule_id="P8",
-            verdict=PolicyVerdict.ALLOW,
-            reason="All gate rules P1-P8 passed",
-            details=(),
+    def evaluate(self, context: PolicyContext) -> PolicyEvaluationResult:
+        """Evaluate P1..P8; DENY overrides ESCALATE overrides ALLOW."""
+        pre_map, post_map = self._collect_source_maps(context)
+        decisions = (
+            self._eval_p1(context),
+            self._eval_p2(context, pre_map, post_map),
+            self._eval_p3(context),
+            self._eval_p4(context, pre_map, post_map),
+            self._eval_p5(context),
+            self._eval_p6(context),
+            self._eval_p7(context),
+            self._eval_p8(context),
         )
+        verdicts = {d.verdict for d in decisions}
+        if PolicyVerdict.DENY in verdicts:
+            overall = PolicyVerdict.DENY
+        elif PolicyVerdict.ESCALATE in verdicts:
+            overall = PolicyVerdict.ESCALATE
+        else:
+            overall = PolicyVerdict.ALLOW
+        return PolicyEvaluationResult(verdict=overall, decisions=decisions)

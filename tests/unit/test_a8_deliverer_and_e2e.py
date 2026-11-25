@@ -11,21 +11,20 @@ import textwrap
 from pathlib import Path
 
 import pytest
-
 from aegis.delivery.deliverer import (
-    UnsafeRefError,
     Deliverer,
-    KillSwitch,
-    IdempotencyTable,
     DeliverySpec,
+    IdempotencyTable,
     PipelineVerdict,
+    UnsafeRefError,
 )
 from aegis.domain.models import (
-    FailureEvent,
-    FailureClass,
-    Diagnosis,
-    VerificationReport,
     ContextManifest,
+    Diagnosis,
+    FailureClass,
+    FailureEvent,
+    Patch,
+    VerificationReport,
 )
 from aegis.policy.config import load_policy_config
 from aegis.policy.gate import PolicyContext, PolicyGate, PolicyVerdict
@@ -166,10 +165,12 @@ _CLEAN_CALC_DIFF = (
 
 # ── UnsafeRefError ────────────────────────────────────────────────────────────
 
+
 def test_unsafe_ref_error_is_raised_for_non_aegis_refs():
     """UnsafeRefError must be raised when writing a ref outside refs/heads/aegis/.*"""
-    from aegis.delivery.deliverer import UnsafeRefError
     import pytest
+    from aegis.delivery.deliverer import UnsafeRefError
+
     with pytest.raises(UnsafeRefError):
         raise UnsafeRefError("refs/heads/main")
 
@@ -177,6 +178,7 @@ def test_unsafe_ref_error_is_raised_for_non_aegis_refs():
 def test_unsafe_ref_error_message():
     """UnsafeRefError message should identify the unsafe ref."""
     from aegis.delivery.deliverer import UnsafeRefError
+
     try:
         raise UnsafeRefError("refs/heads/main")
     except UnsafeRefError as exc:
@@ -186,11 +188,13 @@ def test_unsafe_ref_error_message():
 
 # ── KillSwitch ────────────────────────────────────────────────────────────────
 
+
 def test_kill_switch_env_enabled_true():
     """AEGIS_ENABLED=1 -> kill switch enabled."""
     os.environ["AEGIS_ENABLED"] = "1"
     try:
         from aegis.delivery.deliverer import KillSwitch
+
         assert KillSwitch.is_enabled() is True
     finally:
         del os.environ["AEGIS_ENABLED"]
@@ -201,6 +205,7 @@ def test_kill_switch_env_disabled_false():
     os.environ["AEGIS_ENABLED"] = "0"
     try:
         from aegis.delivery.deliverer import KillSwitch
+
         assert KillSwitch.is_enabled() is False
     finally:
         del os.environ["AEGIS_ENABLED"]
@@ -213,12 +218,14 @@ def test_kill_switch_env_default_true():
         del os.environ["AEGIS_ENABLED"]
     try:
         from aegis.delivery.deliverer import KillSwitch
+
         assert KillSwitch.is_enabled() is True
     finally:
         pass
 
 
 # ── Deliverer ─────────────────────────────────────────────────────────────────
+
 
 def test_deliverer_validates_unsafe_refs():
     """Deliverer must raise UnsafeRefError for refs outside refs/heads/aegis/."""
@@ -231,7 +238,6 @@ def test_deliverer_validates_unsafe_refs():
 
 def test_deliverer_idempotency_prevents_duplicate_prs():
     """Deliverer idempotency table must prevent duplicate PR creation."""
-    from aegis.delivery.deliverer import IdempotencyTable
 
     table = IdempotencyTable()
     # First attempt should not be a duplicate
@@ -245,7 +251,6 @@ def test_deliverer_idempotency_prevents_duplicate_prs():
 
 def test_deliverer_draft_pr_body():
     """Deliverer must generate correct PR body markdown."""
-    from aegis.delivery.deliverer import Deliverer, DeliverySpec, PipelineVerdict
 
     spec = DeliverySpec(
         repo="org/demo",
@@ -282,6 +287,7 @@ def test_deliverer_draft_pr_body():
 
 # ── Pipeline ──────────────────────────────────────────────────────────────────
 
+
 def test_pipeline_state_machine_transitions():
     """Pipeline must enforce valid state transitions per Master Plan Section 4."""
     from aegis.orchestrator.pipeline import Pipeline, PipelineRunState
@@ -298,7 +304,6 @@ def test_pipeline_state_machine_transitions():
     assert pipeline.status() == PipelineRunState.RUNNING.value
 
     # Triage
-    from aegis.domain.models import Diagnosis
     diagnosis = _make_diagnosis()
     pipeline.triage(diagnosis)
     assert pipeline.status() == PipelineRunState.RUNNING.value
@@ -308,10 +313,8 @@ def test_pipeline_state_machine_transitions():
     assert pipeline.status() == PipelineRunState.RUNNING.value
 
     # Gate
-    from aegis.policy.gate import PolicyGate, PolicyVerdict
-    from aegis.policy.config import PolicyConfig
     policy_config = load_policy_config()
-    gate = PolicyGate(policy_config)
+    PolicyGate(policy_config)
     pipeline.gate_evaluate(PolicyVerdict.ALLOW, "All rules passed")
     # After gate, state should be GATED or REFUSED or ESCALATED
     status = pipeline.status()
@@ -386,12 +389,12 @@ def test_pipeline_event_chain_head():
 
 # ── End-to-End Flow ─────────────────────────────────────────────────────────
 
+
 def test_e2e_full_pipeline_to_gated():
     """End-to-end: full pipeline from webhook ingestion to GATED state with policy gate."""
+    from aegis.domain.models import Diagnosis, FailureClass, FailureEvent, VerificationReport
     from aegis.orchestrator.pipeline import Pipeline
     from aegis.policy.config import load_policy_config
-    from aegis.policy.gate import PolicyContext, PolicyGate, PolicyVerdict
-    from aegis.domain.models import FailureEvent, FailureClass, Diagnosis, VerificationReport
 
     # Setup
     repo = "org/demo"
@@ -424,26 +427,30 @@ def test_e2e_full_pipeline_to_gated():
     pipeline.triage(diagnosis)
 
     # Reproduce
-    pipeline.reproduce(VerificationReport(
-        reproduction_runs=1,
-        reproduced_failures=1,
-        passed_after_patch=True,
-        exit_codes_before=(1,),
-        exit_codes_after=(0,),
-        lint_clean=True,
-        typecheck_clean=True,
-        network_disabled=True,
-        read_only_rootfs=True,
-    ))
+    pipeline.reproduce(
+        VerificationReport(
+            reproduction_runs=1,
+            reproduced_failures=1,
+            passed_after_patch=True,
+            exit_codes_before=(1,),
+            exit_codes_after=(0,),
+            lint_clean=True,
+            typecheck_clean=True,
+            network_disabled=True,
+            read_only_rootfs=True,
+        )
+    )
 
     # Localize
-    pipeline.localize(ContextManifest(
-        method="B1_traceback+grep",
-        files=("pkg/calc.py",),
-        token_counts={"pkg/calc.py": 42},
-        total_tokens=42,
-        symbols=(),
-    ))
+    pipeline.localize(
+        ContextManifest(
+            method="B1_traceback+grep",
+            files=("pkg/calc.py",),
+            token_counts={"pkg/calc.py": 42},
+            total_tokens=42,
+            symbols=(),
+        )
+    )
 
     # Repair attempt (minimal)
     pipeline.repair_attempt(1, {"attempt": 1, "diff_sha256": "x" * 64})
@@ -453,15 +460,15 @@ def test_e2e_full_pipeline_to_gated():
     gate = PolicyGate(policy_config)
 
     # Create a clean patch that should pass all gate rules
-    patch_dict = {
-        "attempt": 1,
-        "unified_diff": _CLEAN_CALC_DIFF,
-        "diff_sha256": hashlib.sha256(_CLEAN_CALC_DIFF.encode("utf-8")).hexdigest(),
-        "changed_files": ("pkg/calc.py",),
-        "added_lines": 1,
-        "deleted_lines": 1,
-        "rationale": "fix subtraction to addition",
-    }
+    patch = Patch(
+        attempt=1,
+        unified_diff=_CLEAN_CALC_DIFF,
+        diff_sha256=hashlib.sha256(_CLEAN_CALC_DIFF.encode("utf-8")).hexdigest(),
+        changed_files=("pkg/calc.py",),
+        added_lines=1,
+        deleted_lines=1,
+        rationale="fix subtraction to addition",
+    )
 
     # Post-patch source for integrity check
     post_src = "def add(a: int, b: int) -> int:\n    return a + b\n"
@@ -471,15 +478,17 @@ def test_e2e_full_pipeline_to_gated():
     pre_map = {"pkg/calc.py": "def add(a: int, b: int) -> int:\n    return a - b\n"}
     post_map = {"pkg/calc.py": post_src}
 
-    policy_result = gate.evaluate(PolicyContext(
-        repo_root=Path("."),
-        event=failure_event,
-        diagnosis=diagnosis,
-        patch=patch_dict,
-        verification=_make_verification(),
-        post_patch_sources=post_map,
-        pre_patch_sources=pre_map,
-    ))
+    policy_result = gate.evaluate(
+        PolicyContext(
+            repo_root=Path(),
+            event=failure_event,
+            diagnosis=diagnosis,
+            patch=patch,
+            verification=_make_verification(),
+            post_patch_sources=post_map,
+            pre_patch_sources=pre_map,
+        )
+    )
 
     pipeline.gate_evaluate(policy_result)
 
@@ -492,12 +501,12 @@ def test_e2e_full_pipeline_to_gated():
 
 def test_e2e_deliverer_created_after_gate_allow():
     """End-to-end: deliverer must be created when gate evaluates to ALLOW."""
-    from aegis.orchestrator.pipeline import Pipeline
-    from aegis.delivery.deliverer import Deliverer, PipelineVerdict, DeliverySpec
-    from aegis.policy.config import load_policy_config
-    from aegis.policy.gate import PolicyContext, PolicyGate, PolicyVerdict
-    from aegis.domain.models import FailureEvent, FailureClass, Diagnosis, VerificationReport
     from pathlib import Path
+
+    from aegis.domain.models import Diagnosis, FailureClass, FailureEvent, VerificationReport
+    from aegis.orchestrator.pipeline import Pipeline
+    from aegis.policy.config import load_policy_config
+    from aegis.policy.gate import PolicyContext, PolicyGate
 
     repo = "org/demo"
     run_id = "deliver-e2e"
@@ -529,38 +538,42 @@ def test_e2e_deliverer_created_after_gate_allow():
     pipeline.triage(diagnosis)
 
     # Reproduce
-    pipeline.reproduce(VerificationReport(
-        reproduction_runs=1,
-        reproduced_failures=1,
-        passed_after_patch=True,
-    ))
+    pipeline.reproduce(
+        VerificationReport(
+            reproduction_runs=1,
+            reproduced_failures=1,
+            passed_after_patch=True,
+        )
+    )
 
     # Gate with ALLOW verdict
     policy_config = load_policy_config()
     gate = PolicyGate(policy_config)
 
-    patch_dict = {
-        "attempt": 1,
-        "unified_diff": _CLEAN_CALC_DIFF,
-        "diff_sha256": hashlib.sha256(_CLEAN_CALC_DIFF.encode("utf-8")).hexdigest(),
-        "changed_files": ("pkg/calc.py",),
-        "added_lines": 1,
-        "deleted_lines": 1,
-        "rationale": "fix subtraction to addition",
-    }
+    patch = Patch(
+        attempt=1,
+        unified_diff=_CLEAN_CALC_DIFF,
+        diff_sha256=hashlib.sha256(_CLEAN_CALC_DIFF.encode("utf-8")).hexdigest(),
+        changed_files=("pkg/calc.py",),
+        added_lines=1,
+        deleted_lines=1,
+        rationale="fix subtraction to addition",
+    )
 
     pre_map = {"pkg/calc.py": "def add(a: int, b: int) -> int:\n    return a - b\n"}
     post_map = {"pkg/calc.py": "def add(a: int, b: int) -> int:\n    return a + b\n"}
 
-    policy_result = gate.evaluate(PolicyContext(
-        repo_root=Path("."),
-        event=failure_event,
-        diagnosis=diagnosis,
-        patch=patch_dict,
-        verification=_make_verification(),
-        post_patch_sources=post_map,
-        pre_patch_sources=pre_map,
-    ))
+    policy_result = gate.evaluate(
+        PolicyContext(
+            repo_root=Path(),
+            event=failure_event,
+            diagnosis=diagnosis,
+            patch=patch,
+            verification=_make_verification(),
+            post_patch_sources=post_map,
+            pre_patch_sources=pre_map,
+        )
+    )
 
     pipeline.gate_evaluate(policy_result)
 

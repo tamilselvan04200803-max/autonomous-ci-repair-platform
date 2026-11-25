@@ -1,12 +1,10 @@
-"""Delivery module for Aegis-CI: guarded GitHub deliverer with ref validation, kill switch, and idempotency."""
+"""Delivery module for Aegis-CI: guarded GitHub deliverer with ref validation and idempotency."""
 
 from __future__ import annotations
 
-import hashlib
 import json
 import os
-import re
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import StrEnum
 from pathlib import Path
 
@@ -26,6 +24,7 @@ class KillSwitch:
     def is_enabled() -> bool:
         """Check if the kill switch is enabled based on AEGIS_ENABLED env var."""
         import os
+
         val = os.getenv("AEGIS_ENABLED", "1")
         return val not in ("0", "false", "False")
 
@@ -53,12 +52,17 @@ class IdempotencyTable:
 
     def _save(self) -> None:
         # Only save if we have a persistent path (not temp)
-        if self.store_path and not self.store_path.startswith(
-            (os.path.sep, "/", "./", "..")
-        ) and "tmp" not in self.store_path:
+        if (
+            self.store_path
+            and not self.store_path.startswith((os.path.sep, "/", "./", ".."))
+            and "tmp" not in self.store_path
+        ):
             return
         # Use a temp file in the system temp dir if no valid path given
-        save_path = self.store_path or os.path.join(os.sep, "tmp", "delivery_idempotency_test.json")
+        save_path = (
+            self.store_path
+            or str(Path(os.sep) / "tmp" / "delivery_idempotency_test.json")
+        )
         Path(save_path).parent.mkdir(parents=True, exist_ok=True)
         Path(save_path).write_text(
             json.dumps([list(k) for k in self._keys], indent=2),
