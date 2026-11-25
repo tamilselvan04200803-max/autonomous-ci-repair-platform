@@ -72,14 +72,14 @@
 - [x] Run ruff, `mypy --strict`, pytest & verify all A4 acceptance criteria pass
 
 ### Milestone A5 — Code Graph, Localizer, Experiment & MCP v2 Server
-- [ ] Write `tests/contracts/test_mcp_v2_contract.py` proving `from mcp.server import MCPServer` works on pinned `mcp==2.3.0`
-- [ ] Write failing TDD tests `tests/unit/test_a5_graph_and_mcp.py`
-- [ ] Implement `aegis/graph/frontend.py` (`LanguageFrontend` Protocol + `PythonAstFrontend` using stdlib `ast` extracting module/class/function/test nodes + imports/defines/calls [with `resolved: bool` flag] + test-to-target edges)
-- [ ] Implement `aegis/graph/store.py` (SQLite incremental indexer keyed by SHA-256 content hash + k-hop query helpers)
-- [ ] Implement `aegis/localization/localizer.py` (B0 whole-repo, B1 traceback+grep using `agentsentinel.localization.traceback_parser`, B2 k-hop graph context, token-budgeted `ContextManifest`)
-- [ ] Implement `aegis/mcp/server.py` (Read-only `MCPServer` exposing ONLY `lookup_symbol`, `find_callers`, `find_callees`, `analyze_impact`; test asserts zero mutating tools exist)
-- [ ] Run localization experiment B0 vs B1 vs B2 script after Tier A cases exist in A9 (and initial unit validation in A5) and apply Section 7.5 pre-registered rule
-- [ ] Run ruff, `mypy --strict`, pytest & verify A5 passes
+- [x] Write `tests/contracts/test_mcp_v2_contract.py` proving `from mcp.server import MCPServer` works on pinned `mcp==2.3.0`
+- [x] Write failing TDD tests `tests/unit/test_a5_graph_and_mcp.py`
+- [x] Implement `aegis/graph/frontend.py` (`LanguageFrontend` Protocol + `PythonAstFrontend` using stdlib `ast` extracting module/class/function/test nodes + imports/defines/calls [with `resolved: bool` flag] + test-to-target edges)
+- [x] Implement `aegis/graph/store.py` (SQLite incremental indexer keyed by SHA-256 content hash + k-hop query helpers)
+- [x] Implement `aegis/localization/localizer.py` (B0 whole-repo, B1 traceback+grep using `agentsentinel.localization.traceback_parser`, B2 k-hop graph context, token-budgeted `ContextManifest`)
+- [x] Implement `aegis/mcp/server.py` (Read-only `MCPServer` exposing ONLY `lookup_symbol`, `find_callers`, `find_callees`, `analyze_impact`; test asserts zero mutating tools exist)
+- [ ] Run localization experiment B0 vs B1 vs B2 script after Tier A cases exist in A9 (initial unit validation complete in A5) and apply Section 7.5 pre-registered rule
+- [x] Run ruff, `mypy --strict`, pytest & verify A5 passes (26 passed, 23 mypy files clean)
 
 ### Milestone A6 — Bounded Repair Loop, Governor & Cassettes
 - [ ] Write failing TDD tests `tests/unit/test_a6_repair_loop.py`
