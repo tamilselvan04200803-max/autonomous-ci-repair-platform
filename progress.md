@@ -54,12 +54,12 @@
 - [x] Run ruff, `mypy --strict`, pytest & verify all A2 acceptance criteria pass
 
 ### Milestone A3 — Deterministic Triage Parsers & Flake Detection
-- [ ] Create golden corpus under `tests/fixtures/triage_corpus/` (>=15 real-format logs per tool: `pytest`, `ruff`, `mypy`, `pip`, plus `unclassified` cases)
-- [ ] Write failing TDD tests `tests/unit/test_a3_triage_and_redactor.py` (redactor ANSI/secret stripping & `UNTRUSTED_DATA` wrapping, `--junitxml` parser, pytest console fallback, ruff, mypy, pip resolver, `UNCLASSIFIED` on unknown/deploy errors, flake check `k` reruns mixed pass/fail -> `F5` never patch)
-- [ ] Implement `aegis/triage/redactor.py` (ANSI strip, token/key redaction, bounded truncate, untrusted wrapper)
-- [ ] Implement `aegis/triage/parsers.py` (`parse_junit_xml`, `parse_pytest_log`, `parse_ruff_log`, `parse_mypy_log`, `parse_pip_log`, `triage_failure`)
-- [ ] Implement `aegis/triage/flake.py` (`detect_flaky_failure` rerunning failed tests k times)
-- [ ] Run ruff, `mypy --strict`, pytest & verify 100% classification accuracy across >=60 corpus logs
+- [x] Create golden corpus under `tests/fixtures/triage_corpus/` (>=15 real-format logs per tool: `pytest`, `ruff`, `mypy`, `pip`, plus `unclassified` cases)
+- [x] Write failing TDD tests `tests/unit/test_a3_triage_and_redactor.py` (redactor ANSI/secret stripping & `UNTRUSTED_DATA` wrapping, `--junitxml` parser, pytest console fallback, ruff, mypy, pip resolver, `UNCLASSIFIED` on unknown/deploy errors, flake check `k` reruns mixed pass/fail -> `F5` never patch)
+- [x] Implement `aegis/triage/redactor.py` (ANSI strip, token/key redaction, bounded truncate, untrusted wrapper)
+- [x] Implement `aegis/triage/parsers.py` (`parse_junit_xml`, `parse_pytest_log`, `parse_ruff_log`, `parse_mypy_log`, `parse_pip_log`, `triage_failure`)
+- [x] Implement `aegis/triage/flake.py` (`detect_flaky_failure` rerunning failed tests k times)
+- [x] Run ruff, `mypy --strict`, pytest & verify 100% classification accuracy across >=60 corpus logs
 
 ### Milestone A4 — Two-Phase Reproduction Sandbox (Tar Stream & AgentSentinel Bridge)
 - [ ] Write `tests/contracts/test_tarfile_container_contract.py` and failing tests `tests/unit/test_a4_sandbox.py`
