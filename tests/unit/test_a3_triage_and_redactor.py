@@ -15,16 +15,18 @@ CORPUS_ROOT = Path(__file__).resolve().parents[1] / "fixtures" / "triage_corpus"
 
 @pytest.mark.unit
 def test_redactor_strips_ansi_redacts_secrets_truncates_and_wraps() -> None:
+    fake_gh = "ghp_" + "A" * 30
+    fake_sk = "sk-proj-" + "B" * 30
     raw = (
-        "\x1b[31mERROR\x1b[0m: auth failed with token ghp_ABCDEFGHIJKLMNOPQRST1234567890 "
-        "and bearer Bearer my-super-secret-jwt-value and sk-proj-ABCDEFGHIJKLMNOPQRSTUVWXYZ1234\n"
+        f"\x1b[31mERROR\x1b[0m: auth failed with token {fake_gh} "
+        f"and bearer Bearer my-super-secret-jwt-value and {fake_sk}\n"
         + ("A" * 5000)
     )
     safe = sanitize_untrusted_log(raw, max_chars=500)
     assert "\x1b" not in safe
-    assert "ghp_ABCDEFGHIJKLMNOPQRST1234567890" not in safe
+    assert fake_gh not in safe
     assert "my-super-secret-jwt-value" not in safe
-    assert "sk-proj-ABCDEFGHIJKLMNOPQRSTUVWXYZ1234" not in safe
+    assert fake_sk not in safe
     assert "[REDACTED:" in safe
     assert "<<<UNTRUSTED_DATA_BEGIN>>>" in safe
     assert "<<<UNTRUSTED_DATA_END>>>" in safe

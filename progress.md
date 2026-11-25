@@ -62,14 +62,14 @@
 - [x] Run ruff, `mypy --strict`, pytest & verify 100% classification accuracy across >=60 corpus logs
 
 ### Milestone A4 — Two-Phase Reproduction Sandbox (Tar Stream & AgentSentinel Bridge)
-- [ ] Write `tests/contracts/test_tarfile_container_contract.py` and failing tests `tests/unit/test_a4_sandbox.py`
-- [ ] Implement `aegis/sandbox/tar_stream.py` (in-memory deterministic POSIX LF tar builder excluding `.git`, `.env*`, secrets, symlinks, hardlinks)
-- [ ] Implement `aegis/sandbox/runner.py`:
+- [x] Write `tests/contracts/test_tarfile_container_contract.py` and failing tests `tests/unit/test_a4_sandbox.py`
+- [x] Implement `aegis/sandbox/tar_stream.py` (in-memory deterministic POSIX LF tar builder excluding `.git`, `.env*`, secrets, symlinks, hardlinks)
+- [x] Implement `aegis/sandbox/runner.py`:
   - `PrepareConfig` / `prepare_environment` (network limited to configured package index, lockfile SHA-256 image cache key)
   - `RunConfig` / `AegisSandboxRunner` integrating `agentsentinel.sandbox.HardenedContainerRunner` flags (`--network=none`, `--read-only`, `--tmpfs`, `--user 65534:65534`, `--cap-drop=ALL`, `--security-opt=no-new-privileges`, PIDs/memory/CPU limits) + tar-stream workspace delivery (no Windows bind mount issues!)
   - Multi-run baseline reproducer (`reproduce_baseline` k times -> `VerificationReport`)
-- [ ] Include isolated live/simulated container flag assertions, socket-failure probe test, fork-bomb/memory-limit test spec, and Windows LF preservation test
-- [ ] Run ruff, `mypy --strict`, pytest & verify all A4 acceptance criteria pass
+- [x] Include isolated live/simulated container flag assertions, socket-failure probe test, fork-bomb/memory-limit test spec (`tests/integration/test_a4_docker_live.py`), and Windows LF preservation test
+- [x] Run ruff, `mypy --strict`, pytest & verify all A4 acceptance criteria pass
 
 ### Milestone A5 — Code Graph, Localizer, Experiment & MCP v2 Server
 - [ ] Write `tests/contracts/test_mcp_v2_contract.py` proving `from mcp.server import MCPServer` works on pinned `mcp==2.3.0`
