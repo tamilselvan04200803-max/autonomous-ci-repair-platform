@@ -1,0 +1,2 @@
+src/svc.py:31: error: Incompatible return value type (got "None", expected "str")  [return-value]
+Found 1 error in 1 file (checked 8 source files)

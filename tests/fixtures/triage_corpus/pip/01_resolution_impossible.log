@@ -1,0 +1,5 @@
+ERROR: Cannot install aegis and httpx==0.28.1 because these package versions have conflicting dependencies.
+The conflict is caused by:
+    The user requested httpx==0.28.1
+    sdk 1.0 depends on httpx<0.25
+ERROR: ResolutionImpossible: for help visit https://pip.pypa.io/en/latest/topics/dependency-resolution/

@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File 'src/schemas.py', line 3, in <module>
+    from pydantic import root_validator
+pydantic.errors.PydanticImportError: `root_validator` has been removed in V3 / V2 strict mode

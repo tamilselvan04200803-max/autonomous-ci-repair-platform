@@ -1,0 +1,2 @@
+src/cache.py:15: error: Missing type parameters for generic type "dict"  [type-arg]
+Found 1 error in 1 file

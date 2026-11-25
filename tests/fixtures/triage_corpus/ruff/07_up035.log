@@ -1,0 +1,2 @@
+src/types.py:2:1: UP035 Import from `collections.abc` instead: `Sequence`
+Found 1 error.

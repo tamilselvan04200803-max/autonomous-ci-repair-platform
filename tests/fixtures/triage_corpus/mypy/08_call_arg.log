@@ -1,0 +1,2 @@
+src/client.py:55: error: Unexpected keyword argument "retries" for "fetch"  [call-arg]
+Found 1 error in 1 file

@@ -1,0 +1,7 @@
+================================== FAILURES ===================================
+__________________________________ test_head ___________________________________
+tests/test_list.py:7: in test_head
+    assert first_item([]) is None
+E   IndexError: list index out of range
+FAILED tests/test_list.py::test_head - IndexError: list index out of range
+1 failed in 0.03s

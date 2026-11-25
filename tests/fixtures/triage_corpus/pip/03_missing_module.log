@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File 'src/main.py', line 2, in <module>
+    import pydantic_settings
+ModuleNotFoundError: No module named 'pydantic_settings'

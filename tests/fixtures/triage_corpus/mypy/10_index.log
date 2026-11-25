@@ -1,0 +1,2 @@
+src/table.py:33: error: Value of type "int" is not indexable  [index]
+Found 1 error in 1 file

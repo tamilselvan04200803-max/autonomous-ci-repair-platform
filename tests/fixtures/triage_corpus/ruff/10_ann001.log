@@ -1,0 +1,2 @@
+src/api.py:9:12: ANN001 Missing type annotation for function argument `user_id`
+Found 1 error.

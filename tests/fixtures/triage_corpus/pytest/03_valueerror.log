@@ -1,0 +1,7 @@
+================================== FAILURES ===================================
+_______________________________ test_parse_port ________________________________
+tests/test_net.py:9: in test_parse_port
+    parse_port('abc')
+E   ValueError: invalid literal for int() with base 10: 'abc'
+FAILED tests/test_net.py::test_parse_port - ValueError: invalid literal
+1 failed in 0.05s

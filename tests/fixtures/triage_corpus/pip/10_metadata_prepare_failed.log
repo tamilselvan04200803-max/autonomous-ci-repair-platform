@@ -1,0 +1,3 @@
+error: subprocess-exited-with-error
+× Preparing metadata (pyproject.toml) did not run successfully.
+Missing required build dependency: cython>=3.0

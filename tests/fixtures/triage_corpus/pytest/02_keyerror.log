@@ -1,0 +1,7 @@
+================================== FAILURES ===================================
+______________________________ test_config_lookup ______________________________
+tests/test_cfg.py:22: in test_config_lookup
+    val = get_setting('timeout')
+E   KeyError: 'timeout'
+FAILED tests/test_cfg.py::test_config_lookup - KeyError: 'timeout'
+1 failed, 5 passed in 0.18s

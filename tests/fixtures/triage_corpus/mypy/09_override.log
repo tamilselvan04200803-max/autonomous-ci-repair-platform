@@ -1,0 +1,2 @@
+src/sub.py:19: error: Signature of "run" incompatible with supertype "BaseRunner"  [override]
+Found 1 error in 1 file

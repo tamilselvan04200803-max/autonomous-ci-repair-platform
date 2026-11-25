@@ -32,6 +32,7 @@ yarn-debug.log*
 yarn-error.log*
 *.log
 !examples/failure-logs/*.log
+!tests/fixtures/triage_corpus/**/*.log
 
 # secrets and keys
 *.pem
