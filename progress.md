@@ -91,12 +91,12 @@
 - [x] Run ruff, `mypy --strict`, pytest & verify A6 passes (31 passed, 30 mypy files clean)
 
 ### Milestone A7 — YAML-Configured Policy Gate (P1–P8)
-- [ ] Create `config/policy.yaml` documenting default rules P1..P8
-- [ ] Write failing TDD tests `tests/unit/test_a7_policy_gate.py` with **>=2 allow AND >=2 deny fixtures per rule P1..P8**
-- [ ] Implement `aegis/policy/config.py` (YAML loader + Pydantic validation)
-- [ ] Implement `aegis/policy/ast_test_integrity.py` (AST diff of base vs patched tests: test IDs must not shrink, per-test assert count must not drop, no added `skip`/`skipif`/`xfail`/`importorskip`, no tautology asserts, test-only patch -> `ESCALATE`)
-- [ ] Implement `aegis/policy/gate.py` evaluating P1 (path deny w/ F4 lockfile exception & homoglyph/traversal/symlink checks), P2 (AST test integrity), P3 (diff budget 3 files / 60 lines), P4 (AST dangerous constructs + AgentSentinel `verify_not_overfitted`), P5 (secret scan), P6 (required evidence), P7 (confidence threshold -> diagnosis-only), P8 (depth limit 1)
-- [ ] Run ruff, `mypy --strict`, pytest & verify 100% of allow/deny fixtures behave as specified
+- [x] Create `config/policy.yaml` documenting default rules P1..P8
+- [x] Write failing TDD tests `tests/unit/test_a7_policy_gate.py` with **>=2 allow AND >=2 deny fixtures per rule P1..P8**
+- [x] Implement `aegis/policy/config.py` (YAML loader + Pydantic validation)
+- [x] Implement `aegis/policy/ast_test_integrity.py` (AST diff of base vs patched tests: test IDs must not shrink, per-test assert count must not drop, no added `skip`/`skipif`/`xfail`/`importorskip`, no tautology asserts, test-only patch -> `ESCALATE`)
+- [x] Implement `aegis/policy/gate.py` evaluating P1 (path deny w/ F4 lockfile exception & homoglyph/traversal/symlink checks), P2 (AST test integrity), P3 (diff budget 3 files / 60 lines), P4 (AST dangerous constructs + AgentSentinel `verify_not_overfitted`), P5 (secret scan), P6 (required evidence), P7 (confidence threshold -> diagnosis-only), P8 (depth limit 1)
+- [x] Run ruff, `mypy --strict`, pytest & verify 100% of allow/deny fixtures behave as specified (39 passed, 1 Windows symlink skip, 34 mypy files clean)
 
 ### Milestone A8 — Guarded GitHub Deliverer & Pipeline Orchestrator
 - [ ] Write failing TDD tests `tests/unit/test_a8_deliverer_and_e2e.py` (assert `UnsafeRefError` outside `refs/heads/aegis/*`, `AEGIS_ENABLED` kill switch, repo allowlist, webhook idempotency preventing duplicate PRs, full PR markdown body fields including hash-chain head, check run payload, full end-to-end pipeline `RECEIVED -> DELIVERED/REFUSED/ESCALATED/FAILED` with crash resume)

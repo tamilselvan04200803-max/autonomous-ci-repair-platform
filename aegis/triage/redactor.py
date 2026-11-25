@@ -18,7 +18,17 @@ _SECRET_PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
         "PEM_KEY",
         re.compile(r"-----BEGIN [A-Z ]*PRIVATE KEY-----[\s\S]*?-----END [A-Z ]*PRIVATE KEY-----"),
     ),
+    ("PEM_HEADER", re.compile(r"-----BEGIN [A-Z ]*(?:PRIVATE|RSA|EC|OPENSSH) KEY-----")),
 )
+
+
+def detect_secret_labels(text: str) -> tuple[str, ...]:
+    """Return sorted secret pattern labels matched inside untrusted text."""
+    hits: list[str] = []
+    for label, pattern in _SECRET_PATTERNS:
+        if pattern.search(text):
+            hits.append(label)
+    return tuple(dict.fromkeys(hits))
 
 UNTRUSTED_BEGIN = "<<<UNTRUSTED_DATA_BEGIN>>>"
 UNTRUSTED_END = "<<<UNTRUSTED_DATA_END>>>"
