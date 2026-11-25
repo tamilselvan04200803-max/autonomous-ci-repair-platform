@@ -190,6 +190,24 @@ class EventLogStore:
             updated_at_utc=str(row["updated_at_utc"]),
         )
 
+    def list_queued_runs(self, state: RunState = RunState.RECEIVED) -> list[RunCheckpoint]:
+        """List runs currently awaiting processing at the given state."""
+        rows = self._conn.execute(
+            "SELECT * FROM aegis_runs WHERE state = ? ORDER BY created_at_utc ASC",
+            (state.value,),
+        ).fetchall()
+        return [
+            RunCheckpoint(
+                run_id=str(row["run_id"]),
+                state=RunState(str(row["state"])),
+                meta=dict(json.loads(str(row["meta_json"]))),
+                checkpoint_data=dict(json.loads(str(row["checkpoint_json"]))),
+                created_at_utc=str(row["created_at_utc"]),
+                updated_at_utc=str(row["updated_at_utc"]),
+            )
+            for row in rows
+        ]
+
     def save_checkpoint(
         self,
         run_id: str,

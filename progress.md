@@ -47,11 +47,11 @@
 - [x] Run ruff, `mypy --strict`, pytest & verify all A1 acceptance criteria pass
 
 ### Milestone A2 — GitHub Webhook Ingest & App Client
-- [ ] Write `tests/contracts/test_fastapi_contract.py`, `tests/contracts/test_pyjwt_contract.py`, `tests/contracts/test_httpx_contract.py` (with docs URLs)
-- [ ] Write failing TDD tests `tests/unit/test_a2_ingest_and_github.py` (valid signature, bad sig, legacy SHA-1 only, missing header, duplicate delivery ID, fork PR skip, `aegis/*` branch skip, non-failure conclusion skip, self app ID loop skip, JWT RS256 caching/refresh, `X-GitHub-Api-Version: 2026-03-10`, failed job log fetch, zero token leakage in logs)
-- [ ] Implement `aegis/ingest/webhook.py` (FastAPI `/webhook`, raw bytes HMAC-SHA256 via `hmac.compare_digest` before JSON parse, SQLite delivery dedup & queue, HTTP 202)
-- [ ] Implement `aegis/github/client.py` (`GitHubAppAuth` RS256 JWT + cached installation token, `GitHubClient` on `httpx` pinned to `2026-03-10`, log fetcher & redaction-safe error handling)
-- [ ] Run ruff, `mypy --strict`, pytest & verify all A2 acceptance criteria pass
+- [x] Write `tests/contracts/test_fastapi_contract.py`, `tests/contracts/test_pyjwt_contract.py`, `tests/contracts/test_httpx_contract.py` (with docs URLs)
+- [x] Write failing TDD tests `tests/unit/test_a2_ingest_and_github.py` (valid signature, bad sig, legacy SHA-1 only, missing header, duplicate delivery ID, fork PR skip, `aegis/*` branch skip, non-failure conclusion skip, self app ID loop skip, JWT RS256 caching/refresh, `X-GitHub-Api-Version: 2026-03-10`, failed job log fetch, zero token leakage in logs)
+- [x] Implement `aegis/ingest/webhook.py` (FastAPI `/webhook`, raw bytes HMAC-SHA256 via `hmac.compare_digest` before JSON parse, SQLite delivery dedup & queue, HTTP 202)
+- [x] Implement `aegis/github/client.py` (`GitHubAppAuth` RS256 JWT + cached installation token, `GitHubClient` on `httpx` pinned to `2026-03-10`, log fetcher & redaction-safe error handling)
+- [x] Run ruff, `mypy --strict`, pytest & verify all A2 acceptance criteria pass
 
 ### Milestone A3 — Deterministic Triage Parsers & Flake Detection
 - [ ] Create golden corpus under `tests/fixtures/triage_corpus/` (>=15 real-format logs per tool: `pytest`, `ruff`, `mypy`, `pip`, plus `unclassified` cases)
