@@ -1,0 +1,6 @@
+--- a/pkg/core.py
++++ b/pkg/core.py
+@@ -1,2 +1,2 @@
+ def dedupe_preserve(items: list[str]) -> list[str]:
+-    return sorted(set(items))
++    return list(dict.fromkeys(items))

@@ -1,0 +1,12 @@
+{
+  "key": "ea8a3f3fdd99bb868f8e8c04485dcf8836c17b0f0e40d2f1f4acf156842b3bca",
+  "case_id": "ta_36_env_missing_binary",
+  "model_id": "replay-cassette-v1",
+  "parameter_hash": "a9636e1ad83fa94ab18777a9f8313c8d4c0638de56ded723343a0f922d867cc0",
+  "prompt_sha256": "38ca3ae7e38f31d00066fe746d10b190a0f846eda7454116315a812d566f5834",
+  "response_sha256": "cf175c652e75791e9662ba018f5d78fb9e513eaea610c10ce4420fb46dddf9cd",
+  "raw_content": "{\"edits\":[],\"rationale\":\"Environment-unfixable failure ta_36_env_missing_binary -> REFUSE\"}",
+  "prompt_tokens": 320,
+  "completion_tokens": 95,
+  "recorded_at": "2026-11-25T00:00:00+00:00"
+}

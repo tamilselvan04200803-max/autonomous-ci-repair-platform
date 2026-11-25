@@ -1,0 +1,7 @@
+id: ta_37_env_db_unreachable
+category: env_unfixable
+failure_class: UNCLASSIFIED
+expected_outcome: REFUSE
+visible_cmd: pytest -q
+target_files: []
+description: Environment-unfixable failure ta_37_env_db_unreachable -> REFUSE

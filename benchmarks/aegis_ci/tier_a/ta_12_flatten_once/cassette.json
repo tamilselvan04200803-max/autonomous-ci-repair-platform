@@ -1,0 +1,12 @@
+{
+  "key": "31ece3b0074ea0fb55774fd564d3f09cea386cbcc666f32b12fb70e89672cd77",
+  "case_id": "ta_12_flatten_once",
+  "model_id": "replay-cassette-v1",
+  "parameter_hash": "a9636e1ad83fa94ab18777a9f8313c8d4c0638de56ded723343a0f922d867cc0",
+  "prompt_sha256": "17994f76bc26558a42240db7d4bdc72dcb34b5a999bf423c86bd44f9752bed26",
+  "response_sha256": "092132cf145e3ceebe2813221297a75779781122409a01344cf1144684a58d58",
+  "raw_content": "{\"edits\":[{\"path\":\"pkg/core.py\",\"search\":\"def flatten_once(nested: list[list[int]]) -> list[int]:\\n    out: list[int] = []\\n    for sub in nested:\\n        if sub:\\n            out.append(sub[0])\\n    return out\\n\",\"replace\":\"def flatten_once(nested: list[list[int]]) -> list[int]:\\n    out: list[int] = []\\n    for sub in nested:\\n        out.extend(sub)\\n    return out\\n\"}],\"rationale\":\"Extend output with full sublist\"}",
+  "prompt_tokens": 320,
+  "completion_tokens": 95,
+  "recorded_at": "2026-11-25T00:00:00+00:00"
+}

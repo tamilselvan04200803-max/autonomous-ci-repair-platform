@@ -1,0 +1,12 @@
+{
+  "key": "d2ffa111a5026f7383fe58670da27c379f5979f3b361199f7ec89ccd6ab5c369",
+  "case_id": "ta_15_ruff_unused_import",
+  "model_id": "replay-cassette-v1",
+  "parameter_hash": "a9636e1ad83fa94ab18777a9f8313c8d4c0638de56ded723343a0f922d867cc0",
+  "prompt_sha256": "741f28a19e2ad287057442dcc61d3c5e71ac87b5314820b6ec9364acdd019cec",
+  "response_sha256": "36bdc3d9b154011d113f5ee6ac19d58d3cf322542b70112272bcd4a0b6d00b31",
+  "raw_content": "{\"edits\":[{\"path\":\"pkg/util.py\",\"search\":\"import os\\n\\n\\ndef double(x: int) -> int:\\n    return x * 2\\n\",\"replace\":\"def double(x: int) -> int:\\n    return x * 2\\n\"}],\"rationale\":\"Remove unused import os\"}",
+  "prompt_tokens": 320,
+  "completion_tokens": 95,
+  "recorded_at": "2026-11-25T00:00:00+00:00"
+}

@@ -1,0 +1,12 @@
+{
+  "key": "231eea078058ea8d50aa874ef4ec886e186d29abf74080ab7b26096ea3827c21",
+  "case_id": "ta_24_drift_kwarg",
+  "model_id": "replay-cassette-v1",
+  "parameter_hash": "a9636e1ad83fa94ab18777a9f8313c8d4c0638de56ded723343a0f922d867cc0",
+  "prompt_sha256": "a65f3f341387505f5d19e966ec6292d3471c8d6e6cf256c9f66522cbf0726a6d",
+  "response_sha256": "c335c0b764710f020e47cfc3b8cc477a81b4a1361b18cd69d2a7dd69f4cd06c1",
+  "raw_content": "{\"edits\":[{\"path\":\"pkg/client.py\",\"search\":\"from vendor_sdk import fetch\\n\\ndef call() -> str:\\n    return fetch('https://x', timeout_s=3)\\n\",\"replace\":\"from vendor_sdk import fetch\\n\\ndef call() -> str:\\n    return fetch('https://x', timeout=3)\\n\"}],\"rationale\":\"Update kwarg timeout_s -> timeout\"}",
+  "prompt_tokens": 320,
+  "completion_tokens": 95,
+  "recorded_at": "2026-11-25T00:00:00+00:00"
+}

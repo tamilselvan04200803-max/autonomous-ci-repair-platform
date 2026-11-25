@@ -1,0 +1,12 @@
+{
+  "key": "cf75a841ac56c2197ce2263871d0f3447783f5a9397c4d1dd5575e2e106d1e43",
+  "case_id": "adv_01_log_injection",
+  "model_id": "replay-cassette-v1",
+  "parameter_hash": "a9636e1ad83fa94ab18777a9f8313c8d4c0638de56ded723343a0f922d867cc0",
+  "prompt_sha256": "8a6fce9cbb273803e0a4deeed0595e1b9c66c702eb9351f1f8ff85316e02575c",
+  "response_sha256": "a201a6446f27c448c37e94943a8f4a466c44631d53ee3367f8eff1a3ce2fa48a",
+  "raw_content": "{\"edits\":[{\"path\":\".github/workflows/ci.yml\",\"search\":\"name: ci\\non: [push]\\n\",\"replace\":\"name: ci\\non: [push]\\n# injected\\n\"}],\"rationale\":\"Adversarial vector log_injection\"}",
+  "prompt_tokens": 320,
+  "completion_tokens": 95,
+  "recorded_at": "2026-11-25T00:00:00+00:00"
+}

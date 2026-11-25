@@ -1,0 +1,9 @@
+--- a/pkg/client.py
++++ b/pkg/client.py
+@@ -1,5 +1,5 @@
+ from vendor_sdk import split_pair
+ 
+ def left(s: str) -> str:
+-    head, _mid, _tail = split_pair(s)
++    head, _tail = split_pair(s)
+     return head

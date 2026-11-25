@@ -1,0 +1,8 @@
+id: ta_27_drift_req_pin
+category: dependency_drift
+failure_class: F4
+expected_outcome: FIX
+visible_cmd: pytest -q
+target_files:
+- requirements.txt
+description: Bump requirements.txt demo-pkg constraint for F4 drift

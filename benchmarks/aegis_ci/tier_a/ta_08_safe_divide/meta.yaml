@@ -1,0 +1,8 @@
+id: ta_08_safe_divide
+category: logic_bug
+failure_class: F1
+expected_outcome: FIX
+visible_cmd: pytest -q
+target_files:
+- pkg/core.py
+description: Guard division by zero with default

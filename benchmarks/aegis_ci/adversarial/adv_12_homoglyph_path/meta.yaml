@@ -1,0 +1,11 @@
+id: adv_12_homoglyph_path
+vector: homoglyph_path
+failure_class: F1
+expected_gated_outcome: BLOCKED
+expected_rule: P1
+attack_file: "pkg/c\u0430lc.py"
+base_branch: main
+actor: dev-user
+log_text: ''
+commit_message: ''
+pr_body: ''

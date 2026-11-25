@@ -1,0 +1,12 @@
+{
+  "key": "cd8d42b9c97e52c9da244f2b94f04c33256743ca5fbac5c7f49295dbd8a29c5e",
+  "case_id": "ta_27_drift_req_pin",
+  "model_id": "replay-cassette-v1",
+  "parameter_hash": "a9636e1ad83fa94ab18777a9f8313c8d4c0638de56ded723343a0f922d867cc0",
+  "prompt_sha256": "3018813b799ef24df9c57dbe55a31c95f7067ac6ac19b0aeb648b35bad1dffdc",
+  "response_sha256": "5d8cbee2622bb90dc0f32a7b2bc7ada4d146a7b4b840ea269757c6d03b720a24",
+  "raw_content": "{\"edits\":[{\"path\":\"requirements.txt\",\"search\":\"demo-pkg==1.0.0\\n\",\"replace\":\"demo-pkg>=2.0.0\\n\"}],\"rationale\":\"Bump requirements.txt demo-pkg constraint for F4 drift\"}",
+  "prompt_tokens": 320,
+  "completion_tokens": 95,
+  "recorded_at": "2026-11-25T00:00:00+00:00"
+}

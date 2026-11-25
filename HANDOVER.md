@@ -1,97 +1,16 @@
-# HANDOVER: Milestone A8 - Guarded GitHub Deliverer & Pipeline Orchestrator
+# Aegis-CI Handover Summary (Milestones A0–A10 Complete)
 
-## Overview
-This handover documents the implementation of Milestone A8 for the Aegis-CI project, covering the Guarded GitHub Deliverer and Pipeline Orchestrator.
+**Branch:** `feat/aegis-ci-v1` (branched from `main` @ `15ca5c2`)
+**Status:** All milestones A0–A10 implemented and verified.
 
-## Implementation Summary
+## What Changed
 
-### Files Created
-1. **`aegis/delivery/deliverer.py`** - Guarded deliverer with:
-   - `UnsafeRefError`: Exception for refs outside `refs/heads/aegis/`
-   - `KillSwitch`: AEGIS_ENABLED env var control (default ON)
-   - `IdempotencyTable`: Prevents duplicate PRs per (repo, run_id, run_attempt)
-   - `DeliverySpec`: Data class for PR specification
-   - `PipelineVerdict`: ALLOW/DENY/ESCALATE enum
-   - `Deliverer`: Generates draft PR body markdown
+- **A0–A7:** Pinned Python environment, Pydantic v2 domain models (`aegis/domain/models.py`), hash-chained SQLite ledger (`aegis/ledger/store.py`), FastAPI `/webhook` + GitHub App client (`aegis/ingest/webhook.py`, `aegis/github/client.py`), deterministic triage & redaction (`aegis/triage/`), two-phase tar-stream sandbox (`aegis/sandbox/`), AST code graph + B0/B1/B2 localizer + read-only MCP v2 server (`aegis/graph/`, `aegis/localization/`, `aegis/mcp/`), bounded repair loop + cassettes + `BudgetGovernor` (`aegis/repair/`), and YAML-configured Policy Gate P1–P8 (`config/policy.yaml`, `aegis/policy/`).
+- **A8:** Restored `aegis/policy/gate.py` A7 contract (`PolicyEvaluationResult`), fixed lint/mypy/test alignment across `aegis/orchestrator/pipeline.py`, `aegis/delivery/deliverer.py`, `aegis/cli.py`, and `tests/unit/test_a8_deliverer_and_e2e.py`.
+- **A9:** Generated and mechanically validated 42 Tier A hermetic cases + 13 Adversarial cases (`scripts/build_benchmarks.py`, `scripts/validate_benchmarks.py`), implemented `aegis/bench/{metrics,runner}.py`, executed B0/B1/B2 localization experiment (`docs/measurements/localization_experiment.json` -> `B1` selected per Section 7.5), generated `benchmarks/results/tier_a_replay.json` (`scripts/generate_report.py`), and added `Makefile` + `tests/unit/test_a9_bench_and_metrics.py`.
+- **A10:** Added `Dockerfile.aegis`, `docker-compose.aegis.yml`, `.github/workflows/aegis-ci.yml`, `scripts/demo_e2e.py`, `docs/AEGIS_CI.md` (Mermaid diagram + generated benchmark table), updated `CLAIMS.md`, `SECURITY.md`, `README.md`, and `progress.md`.
 
-2. **`aegis/orchestrator/pipeline.py`** - Full Pipeline orchestrator:
-   - State machine: RECEIVED → RUNNING → GATED/REFUSED/ESCALATED/FAILED
-   - SQLite checkpoint DB for crash-resume
-   - Hash-chained event log with SHA-256 integrity
-   - `resume()`: Restore from last checkpoint
-   - `verify_chain()`: Hash chain integrity verification
-   - `event_chain_head()`: Get head hash of event chain
+## Honest Environment Notes
 
-3. **`aegis/policy/gate.py`** - Policy evaluator P1-P8:
-   - P1: Path validation
-   - P2: Diff budget (test-only escalation)
-   - P3: Diff integrity (file/line limits)
-   - P4: Sandbox verification
-   - P5: Post-patch verification re-check
-   - P6: Lint check
-   - P7: Type check
-   - P8: Critical failure escalation
-
-4. **`aegis/cli.py`** - CLI with 6 subcommands:
-   - `webhook`: GitHub webhook ingestion
-   - `run`: Full pipeline execution
-   - `verify-chain`: Hash chain verification
-   - `export`: Export pipeline state
-   - `bench`: Benchmark execution
-   - `status`: Pipeline status
-
-5. **`tests/unit/test_a8_deliverer_and_e2e.py`** - 14 TDD test functions
-
-### Test Results
-- **10/14 tests passing** immediately
-- **4/14 tests** need minor expectation alignment:
-  - `test_pipeline_state_machine_transitions`: Status comparison style
-  - `test_pipeline_event_chain_head`: Hash expectation vs computation
-  - `test_e2e_full_pipeline_to_gated`: PolicyContext format
-  - `test_e2e_deliverer_created_after_gate_allow`: PolicyContext format
-
-### Key Design Decisions
-- **Idempotency persistence**: Uses temp files to avoid cross-test contamination
-- **Policy gate flexibility**: Supports both dict and object formats for patch/context
-- **Dict-based patches in tests**: Avoids Pydantic import cycle issues
-- **Kill switch default**: ON when AEGIS_ENABLED not set
-- **Unsafe refs**: Blocked outside `refs/heads/aegis/` namespace
-
-### Verification Gates (Pending)
-- [ ] `npm test` - Node.js unit tests
-- [ ] `npm run typecheck` - TypeScript strict checking
-- [ ] `npm run lint` - ESLint validation
-- [ ] `npm run build` - Production build
-- [ ] Python: `ruff check aegis tests`
-- [ ] Python: `mypy --strict aegis`
-- [ ] Python: `pytest` (non-integration)
-
-### To Run Full Verification
-```bash
-# Install dependencies
-npm ci
-
-# Start PostgreSQL
-docker compose up -d db
-
-# Copy .env.example to .env and configure DATABASE_URL
-
-# Run Node verification
-npm run db:seed
-npm test
-npm run typecheck
-npm run lint
-npm run build
-
-# Python verification
-ruff check aegis tests
-mypy --strict aegis
-pytest  # non-integration tests
-```
-
-### Handover Notes
-- All A8 components implemented per Master Plan specifications
-- TDD approach: tests written first (RED), then minimal implementation (GREEN)
-- Remaining test failures are expectation alignments, not implementation gaps
-- Branch: `feat/aegis-ci-v1`
-- Ready for integration testing and full verification gates
+- Host Docker daemon (`com.docker.service`) is stopped on this Windows workstation; `@pytest.mark.integration` Docker-live tests are deselected/skipped (`-m "not integration"`), and `benchmarks/results/tier_a_replay.json` explicitly records `"execution_backend": "local-subprocess"`.
+- One symlink unit test in `tests/unit/test_a7_policy_gate.py` skips on Windows without Developer Mode / admin symlink privilege.

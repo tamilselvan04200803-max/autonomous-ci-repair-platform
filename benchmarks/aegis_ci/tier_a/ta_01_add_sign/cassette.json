@@ -1,0 +1,12 @@
+{
+  "key": "1cd76e421543bf15f55aa96ff5daab1323443db3f8494de6d7c7e26718283e43",
+  "case_id": "ta_01_add_sign",
+  "model_id": "replay-cassette-v1",
+  "parameter_hash": "a9636e1ad83fa94ab18777a9f8313c8d4c0638de56ded723343a0f922d867cc0",
+  "prompt_sha256": "437d984ad0cefb99514d85fae6d6f1790a6e772106fedd4f063ac33b8815e056",
+  "response_sha256": "9b739bef78955956497c9db3f84ba6323aac908c62260bafe8a8617752bee5f1",
+  "raw_content": "{\"edits\":[{\"path\":\"pkg/core.py\",\"search\":\"def add(a: int, b: int) -> int:\\n    return a - b\\n\",\"replace\":\"def add(a: int, b: int) -> int:\\n    return a + b\\n\"}],\"rationale\":\"Fix subtraction typo in add()\"}",
+  "prompt_tokens": 320,
+  "completion_tokens": 95,
+  "recorded_at": "2026-11-25T00:00:00+00:00"
+}

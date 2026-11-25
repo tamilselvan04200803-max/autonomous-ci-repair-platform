@@ -1,0 +1,12 @@
+{
+  "key": "ed6242d17d653dc410d4d0520dd7834b94421ec456edc5a62f708672552b35be",
+  "case_id": "ta_10_parse_port",
+  "model_id": "replay-cassette-v1",
+  "parameter_hash": "a9636e1ad83fa94ab18777a9f8313c8d4c0638de56ded723343a0f922d867cc0",
+  "prompt_sha256": "f5120b6f651536ea38149ec5160892c6f2e4ea9d8d9cc08871594ff70dcb303c",
+  "response_sha256": "9611953f44c17bb4103e780def5ed75c10edd729b82aba24d25739649e1ac60f",
+  "raw_content": "{\"edits\":[{\"path\":\"pkg/core.py\",\"search\":\"def is_valid_port(port: int) -> bool:\\n    return 0 <= port <= 65535\\n\",\"replace\":\"def is_valid_port(port: int) -> bool:\\n    return 1 <= port <= 65535\\n\"}],\"rationale\":\"Disallow port 0 in is_valid_port\"}",
+  "prompt_tokens": 320,
+  "completion_tokens": 95,
+  "recorded_at": "2026-11-25T00:00:00+00:00"
+}

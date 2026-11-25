@@ -1,0 +1,12 @@
+{
+  "key": "85f4f68130796b33bca5b0ce573537ad63b1eed27b39c4ddef4ce3602b6d8ab6",
+  "case_id": "ta_17_ruff_fstring",
+  "model_id": "replay-cassette-v1",
+  "parameter_hash": "a9636e1ad83fa94ab18777a9f8313c8d4c0638de56ded723343a0f922d867cc0",
+  "prompt_sha256": "ee78a740d346ddb2813fb7455b90515c5b9b0cd24171d8c5777c98bcafa4e4d5",
+  "response_sha256": "3f549c7f68047a9445a8644af3cd41d0ff9238d787f84e27572ba9316d9cdd8c",
+  "raw_content": "{\"edits\":[{\"path\":\"pkg/util.py\",\"search\":\"def banner() -> str:\\n    return f\\\"ready\\\"\\n\",\"replace\":\"def banner() -> str:\\n    return \\\"ready\\\"\\n\"}],\"rationale\":\"Replace empty f-string with plain string\"}",
+  "prompt_tokens": 320,
+  "completion_tokens": 95,
+  "recorded_at": "2026-11-25T00:00:00+00:00"
+}

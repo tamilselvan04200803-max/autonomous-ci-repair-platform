@@ -1,0 +1,8 @@
+id: ta_22_mypy_dict_val
+category: lint_type
+failure_class: F3
+expected_outcome: FIX
+visible_cmd: mypy --strict pkg
+target_files:
+- pkg/typed.py
+description: Fix dict value type from str to int

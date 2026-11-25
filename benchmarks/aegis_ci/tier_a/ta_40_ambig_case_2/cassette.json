@@ -1,0 +1,12 @@
+{
+  "key": "34847ab3e2f9d25e076739db4153bad9581fb441c4b5808dfaa5dcd010e79c83",
+  "case_id": "ta_40_ambig_case_2",
+  "model_id": "replay-cassette-v1",
+  "parameter_hash": "a9636e1ad83fa94ab18777a9f8313c8d4c0638de56ded723343a0f922d867cc0",
+  "prompt_sha256": "53abfeb686276f5a45972b7534cc7494d807dc0b9be3b635335b228ad6a02d77",
+  "response_sha256": "3b339e7fa52e0fbe45ae9f0ad11b0ba65fe1f68ebea734e9369715cad17e8d55",
+  "raw_content": "{\"edits\":[],\"rationale\":\"Multi-file (>3 files P3 budget) ambiguous repair 2 -> ESCALATE\"}",
+  "prompt_tokens": 320,
+  "completion_tokens": 95,
+  "recorded_at": "2026-11-25T00:00:00+00:00"
+}

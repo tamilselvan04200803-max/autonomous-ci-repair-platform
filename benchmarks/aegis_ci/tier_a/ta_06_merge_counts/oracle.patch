@@ -1,0 +1,9 @@
+--- a/pkg/core.py
++++ b/pkg/core.py
+@@ -1,5 +1,5 @@
+ def merge_counts(a: dict[str, int], b: dict[str, int]) -> dict[str, int]:
+     out = dict(a)
+     for k, v in b.items():
+-        out[k] = v
++        out[k] = out.get(k, 0) + v
+     return out

@@ -1,0 +1,7 @@
+--- a/pkg/core.py
++++ b/pkg/core.py
+@@ -1,2 +1,4 @@
+ def safe_divide(a: float, b: float, default: float = 0.0) -> float:
++    if b == 0:
++        return default
+     return a / b

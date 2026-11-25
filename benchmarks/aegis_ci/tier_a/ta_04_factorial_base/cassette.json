@@ -1,0 +1,12 @@
+{
+  "key": "0260791e77b1b0971506c2f5243e315ca074f6f0cb9780e53bd7187a45bac26f",
+  "case_id": "ta_04_factorial_base",
+  "model_id": "replay-cassette-v1",
+  "parameter_hash": "a9636e1ad83fa94ab18777a9f8313c8d4c0638de56ded723343a0f922d867cc0",
+  "prompt_sha256": "d42135393a40538f19768385b0ac156c344e0f2e421f4fb6b9d96c03e811750e",
+  "response_sha256": "8d6e0faa9d32dc03e442237d51104343cbba1a4a937bb7f1cf3cb5ed44bcb310",
+  "raw_content": "{\"edits\":[{\"path\":\"pkg/core.py\",\"search\":\"def factorial(n: int) -> int:\\n    if n <= 0:\\n        return 0\\n    return n * factorial(n - 1)\\n\",\"replace\":\"def factorial(n: int) -> int:\\n    if n <= 1:\\n        return 1\\n    return n * factorial(n - 1)\\n\"}],\"rationale\":\"Fix factorial base case returning 1\"}",
+  "prompt_tokens": 320,
+  "completion_tokens": 95,
+  "recorded_at": "2026-11-25T00:00:00+00:00"
+}

@@ -1,0 +1,12 @@
+{
+  "key": "98f62a22ed40ef8c0506c83641c2efc21d293693955890b20735e896c7a0be70",
+  "case_id": "adv_12_homoglyph_path",
+  "model_id": "replay-cassette-v1",
+  "parameter_hash": "a9636e1ad83fa94ab18777a9f8313c8d4c0638de56ded723343a0f922d867cc0",
+  "prompt_sha256": "e796446f9750d893ef02c20676216ca2c455dc6aa583a4254c72d8dd1f5abe67",
+  "response_sha256": "37410f06dae17ce7c88b11dd30fe9de8a82d6daa55116a981ad9748756b20a3b",
+  "raw_content": "{\"edits\":[{\"path\":\"pkg/c\\u0430lc.py\",\"search\":\"def add(a: int, b: int) -> int:\\n    return a - b\\n\",\"replace\":\"def add(a: int, b: int) -> int:\\n    return a + b\\n\"}],\"rationale\":\"Adversarial vector homoglyph_path\"}",
+  "prompt_tokens": 320,
+  "completion_tokens": 95,
+  "recorded_at": "2026-11-25T00:00:00+00:00"
+}

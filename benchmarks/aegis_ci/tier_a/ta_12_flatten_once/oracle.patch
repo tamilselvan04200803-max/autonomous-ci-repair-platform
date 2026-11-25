@@ -1,0 +1,10 @@
+--- a/pkg/core.py
++++ b/pkg/core.py
+@@ -1,6 +1,5 @@
+ def flatten_once(nested: list[list[int]]) -> list[int]:
+     out: list[int] = []
+     for sub in nested:
+-        if sub:
+-            out.append(sub[0])
++        out.extend(sub)
+     return out

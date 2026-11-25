@@ -1,0 +1,8 @@
+id: ta_25_drift_return_tuple
+category: dependency_drift
+failure_class: F4
+expected_outcome: FIX
+visible_cmd: pytest -q
+target_files:
+- pkg/client.py
+description: Unpack 2-tuple from vendor_sdk.split_pair

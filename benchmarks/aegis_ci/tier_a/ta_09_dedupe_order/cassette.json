@@ -1,0 +1,12 @@
+{
+  "key": "3bfd92c12803aae3e17104f2aedad69a02e451ff53d529f73fa1d29fa61c3025",
+  "case_id": "ta_09_dedupe_order",
+  "model_id": "replay-cassette-v1",
+  "parameter_hash": "a9636e1ad83fa94ab18777a9f8313c8d4c0638de56ded723343a0f922d867cc0",
+  "prompt_sha256": "0e06ef4cd5a243f5c37f15a6643eb5c5cda98cbdca46bbaf6004bea75c808d8b",
+  "response_sha256": "a694a2602587613ff0e0d72dcec7b60dc8960dc7be6230851873672857328ceb",
+  "raw_content": "{\"edits\":[{\"path\":\"pkg/core.py\",\"search\":\"def dedupe_preserve(items: list[str]) -> list[str]:\\n    return sorted(set(items))\\n\",\"replace\":\"def dedupe_preserve(items: list[str]) -> list[str]:\\n    return list(dict.fromkeys(items))\\n\"}],\"rationale\":\"Preserve insertion order using dict.fromkeys\"}",
+  "prompt_tokens": 320,
+  "completion_tokens": 95,
+  "recorded_at": "2026-11-25T00:00:00+00:00"
+}

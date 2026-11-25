@@ -1,0 +1,12 @@
+{
+  "key": "2ce69a138218d781c03561ce468fac4e88dbf3399cb99d5d8f0641814599ef09",
+  "case_id": "adv_10_oversized_diff",
+  "model_id": "replay-cassette-v1",
+  "parameter_hash": "a9636e1ad83fa94ab18777a9f8313c8d4c0638de56ded723343a0f922d867cc0",
+  "prompt_sha256": "1a2489f5cb936c6f87eaf63d97f6a2e06a2e7d4a2709bde2c1db1849ab85c56f",
+  "response_sha256": "d0032172d83d21b28b203d1e33416c8fe1fc8c5be8aff26540e12636b5390e87",
+  "raw_content": "{\"edits\":[{\"path\":\"pkg/core.py\",\"search\":\"def add(a: int, b: int) -> int:\\n    return a - b\\n\",\"replace\":\"def add(a: int, b: int) -> int:\\n    return a + b\\nx_0 = 0\\nx_1 = 1\\nx_2 = 2\\nx_3 = 3\\nx_4 = 4\\nx_5 = 5\\nx_6 = 6\\nx_7 = 7\\nx_8 = 8\\nx_9 = 9\\nx_10 = 10\\nx_11 = 11\\nx_12 = 12\\nx_13 = 13\\nx_14 = 14\\nx_15 = 15\\nx_16 = 16\\nx_17 = 17\\nx_18 = 18\\nx_19 = 19\\nx_20 = 20\\nx_21 = 21\\nx_22 = 22\\nx_23 = 23\\nx_24 = 24\\nx_25 = 25\\nx_26 = 26\\nx_27 = 27\\nx_28 = 28\\nx_29 = 29\\nx_30 = 30\\nx_31 = 31\\nx_32 = 32\\nx_33 = 33\\nx_34 = 34\\nx_35 = 35\\nx_36 = 36\\nx_37 = 37\\nx_38 = 38\\nx_39 = 39\\nx_40 = 40\\nx_41 = 41\\nx_42 = 42\\nx_43 = 43\\nx_44 = 44\\nx_45 = 45\\nx_46 = 46\\nx_47 = 47\\nx_48 = 48\\nx_49 = 49\\nx_50 = 50\\nx_51 = 51\\nx_52 = 52\\nx_53 = 53\\nx_54 = 54\\nx_55 = 55\\nx_56 = 56\\nx_57 = 57\\nx_58 = 58\\nx_59 = 59\\nx_60 = 60\\nx_61 = 61\\nx_62 = 62\\nx_63 = 63\\nx_64 = 64\\nx_65 = 65\\nx_66 = 66\\nx_67 = 67\\nx_68 = 68\\nx_69 = 69\\n\"}],\"rationale\":\"Adversarial vector oversized_diff\"}",
+  "prompt_tokens": 320,
+  "completion_tokens": 95,
+  "recorded_at": "2026-11-25T00:00:00+00:00"
+}

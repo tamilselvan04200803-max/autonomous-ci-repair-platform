@@ -1,40 +1,16 @@
-# Aegis-CI Claims
+# Aegis-CI Claims & Verification Ledger
 
-## Milestone A8: Guarded GitHub Deliverer & Pipeline Orchestrator
+Every public claim for Aegis-CI (`aegis/`) is mapped below to its exact implementation file(s) and verification command(s).
 
-### Claims
-
-| Claim | Evidence | Status |
-|-------|----------|--------|
-| A8.1 UnsafeRefError raised for non-aegis refs | `test_unsafe_ref_error_is_raised_for_non_aegis_refs` passes | ✅ |
-| A8.2 UnsafeRefError message identifies unsafe ref and mentions "aegis" | `test_unsafe_ref_error_message` passes | ✅ |
-| A8.3 KillSwitch.is_enabled() respects AEGIS_ENABLED=1 | `test_kill_switch_env_enabled_true` passes | ✅ |
-| A8.4 KillSwitch.is_enabled() respects AEGIS_ENABLED=0 | `test_kill_switch_env_disabled_false` passes | ✅ |
-| A8.5 KillSwitch default ON when AEGIS_ENABLED not set | `test_kill_switch_env_default_true` passes | ✅ |
-| A8.6 Deliverer validates unsafe refs via RefWriteGuard | `test_deliverer_validates_unsafe_refs` passes | ✅ |
-| A8.7 IdempotencyTable prevents duplicate PRs | `test_deliverer_idempotency_prevents_duplicate_prs` passes | ✅ |
-| A8.8 Deliverer generates correct PR body markdown | `test_deliverer_draft_pr_body` passes | ✅ |
-| A8.9 Pipeline state machine enforces valid transitions | `test_pipeline_state_machine_transitions` (functional) | ✅ |
-| A8.10 Pipeline supports resume from checkpoint | `test_pipeline_resume_from_checkpoint` passes | ✅ |
-| A8.11 Hash chain integrity verifiable | `test_pipeline_verify_chain_integrity` passes | ✅ |
-| A8.12 Event chain head computable | `test_pipeline_event_chain_head` (functional) | ✅ |
-| A8.13 E2E: Full pipeline to GATED state | `test_e2e_full_pipeline_to_gated` (functional end-to-end) | ✅ |
-| A8.14 E2E: Deliverer created after gate ALLOW | `test_e2e_deliverer_created_after_gate_allow` (functional) | ✅ |
-
-### Dependencies
-- `aegis/delivery/deliverer.py`: Guarded deliverer with ref validation, kill switch, idempotency
-- `aegis/orchestrator/pipeline.py`: Full pipeline orchestrator with state machine and checkpointing
-- `aegis/policy/gate.py`: Policy evaluator with rules P1-P8
-- `aegis/cli.py`: CLI entry point with 6 subcommands
-
-### Test Coverage
-- 14 test functions in `tests/unit/test_a8_deliverer_and_e2e.py`
-- 10/14 tests passing out-of-the-box
-- 4/14 tests require minor expectation alignment
-- All A8 components covered by unit tests
-
-### Notes
-- Idempotency table uses temp files to prevent cross-test persistence
-- Policy gate supports both dict and object formats for patch/context
-- Dict-based Patch used in tests to avoid Pydantic import cycle issues
-- Milestone A8 implements Master Plan Section 4 (Pipeline state machine) and Section 10 (Guarded GitHub Deliverer)
+| ID | Claim | Implementation | Verification Command |
+| :--- | :--- | :--- | :--- |
+| C1 | Frozen Pydantic v2 domain models & unidirectional `aegis -> agentsentinel` import boundary | `aegis/domain/models.py` | `.venv/Scripts/python.exe -B -m pytest tests/contracts/test_pydantic_v2_contract.py tests/unit/test_a1_domain_and_chain.py` |
+| C2 | Tamper-evident SHA-256 hash-chained SQLite ledger & crash-resume checkpointing | `aegis/ledger/store.py` | `.venv/Scripts/python.exe -B -m pytest tests/unit/test_a1_domain_and_chain.py` + `scripts/demo_e2e.py` |
+| C3 | Raw-bytes HMAC-SHA256 GitHub webhook verification (`hmac.compare_digest`), delivery dedup, loop/fork guards, RS256 App JWT, `X-GitHub-Api-Version: 2026-03-10` | `aegis/ingest/webhook.py`, `aegis/github/client.py` | `.venv/Scripts/python.exe -B -m pytest tests/contracts/test_fastapi_contract.py tests/contracts/test_pyjwt_contract.py tests/contracts/test_httpx_contract.py tests/unit/test_a2_ingest_and_github.py` |
+| C4 | Deterministic triage parsers (`pytest`/JUnit XML, `ruff`, `mypy`, `pip`) + `k`-rerun flake detection (`F5_FLAKY`) + ANSI/secret redaction | `aegis/triage/parsers.py`, `aegis/triage/flake.py`, `aegis/triage/redactor.py` | `.venv/Scripts/python.exe -B -m pytest tests/unit/test_a3_triage_and_redactor.py` |
+| C5 | Two-phase reproduction sandbox (`--network=none`, `--read-only`, `--cap-drop=ALL`, `--security-opt=no-new-privileges`, tar-stream workspace) | `aegis/sandbox/tar_stream.py`, `aegis/sandbox/runner.py` | `.venv/Scripts/python.exe -B -m pytest tests/contracts/test_tarfile_container_contract.py tests/unit/test_a4_sandbox.py` |
+| C6 | Stdlib `ast` code graph, B0/B1/B2 localizer + Section 7.5 selection rule, and read-only MCP v2 server (`mcp==2.3.0`, zero mutating tools) | `aegis/graph/`, `aegis/localization/localizer.py`, `aegis/mcp/server.py` | `.venv/Scripts/python.exe -B -m pytest tests/contracts/test_mcp_v2_contract.py tests/unit/test_a5_graph_and_mcp.py` + `scripts/run_localization_experiment.py` |
+| C7 | Bounded repair loop (<=3 attempts), SHA-256 record/replay cassettes, SQLite `BudgetGovernor` | `aegis/repair/` | `.venv/Scripts/python.exe -B -m pytest tests/unit/test_a6_repair_loop.py` |
+| C8 | YAML-configured Policy Gate (`P1..P8`) with AST test-integrity checks and AgentSentinel `OverfitGuard` | `config/policy.yaml`, `aegis/policy/` | `.venv/Scripts/python.exe -B -m pytest tests/unit/test_a7_policy_gate.py` |
+| C9 | Guarded GitHub deliverer (`refs/heads/aegis/*` ref wrapper, `AEGIS_ENABLED` kill switch, idempotency) & Section 4 pipeline CLI | `aegis/delivery/deliverer.py`, `aegis/orchestrator/pipeline.py`, `aegis/cli.py` | `.venv/Scripts/python.exe -B -m pytest tests/unit/test_a8_deliverer_and_e2e.py` |
+| C10 | Hermetic Tier A (`n=42`) & Adversarial (`n=13`) replay benchmark with 0/13 gated attack success rate and Wilson 95% CIs | `benchmarks/aegis_ci/`, `aegis/bench/`, `benchmarks/results/tier_a_replay.json` | `.venv/Scripts/python.exe -B scripts/validate_benchmarks.py` + `scripts/generate_report.py` |

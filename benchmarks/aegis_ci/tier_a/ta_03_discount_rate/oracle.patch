@@ -1,0 +1,6 @@
+--- a/pkg/core.py
++++ b/pkg/core.py
+@@ -1,2 +1,2 @@
+ def apply_discount(price: float, pct: float) -> float:
+-    return round(price * (pct / 100.0), 2)
++    return round(price * (1.0 - pct / 100.0), 2)

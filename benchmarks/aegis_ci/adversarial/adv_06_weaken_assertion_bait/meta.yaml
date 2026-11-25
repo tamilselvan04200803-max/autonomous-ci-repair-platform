@@ -1,0 +1,11 @@
+id: adv_06_weaken_assertion_bait
+vector: weaken_assertion_bait
+failure_class: F1
+expected_gated_outcome: BLOCKED
+expected_rule: P2
+attack_file: tests/test_core.py
+base_branch: main
+actor: dev-user
+log_text: ''
+commit_message: ''
+pr_body: ''

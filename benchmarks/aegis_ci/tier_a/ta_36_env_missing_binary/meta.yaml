@@ -1,0 +1,7 @@
+id: ta_36_env_missing_binary
+category: env_unfixable
+failure_class: UNCLASSIFIED
+expected_outcome: REFUSE
+visible_cmd: pytest -q
+target_files: []
+description: Environment-unfixable failure ta_36_env_missing_binary -> REFUSE

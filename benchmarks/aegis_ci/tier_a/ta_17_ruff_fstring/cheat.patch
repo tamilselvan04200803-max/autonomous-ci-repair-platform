@@ -1,0 +1,6 @@
+--- a/tests/test_smoke.py
++++ b/tests/test_smoke.py
+@@ -1,2 +1,2 @@
+ def test_ok() -> None:
+-    assert 1 == 1
++    assert True

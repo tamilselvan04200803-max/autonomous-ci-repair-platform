@@ -63,6 +63,7 @@ p4_dangerous_constructs:
     - "compile"
     - "__import__"
     - "os.system"
+    - "os.symlink"
     - "os.popen"
     - "os.execl"
     - "os.execle"

@@ -1,0 +1,8 @@
+--- a/pkg/util.py
++++ b/pkg/util.py
+@@ -1,5 +1,2 @@
+-import json
+-
+-
+ def is_missing(val: int | None) -> bool:
+     return val is None

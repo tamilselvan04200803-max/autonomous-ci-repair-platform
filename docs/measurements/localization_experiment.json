@@ -1,0 +1,356 @@
+{
+  "generated_at": "2026-11-25T11:40:39.855843+00:00",
+  "n_cases": 28,
+  "b0": {
+    "recall_at_k": 1.0,
+    "median_tokens": 149
+  },
+  "b1": {
+    "recall_at_k": 0.9643,
+    "median_tokens": 70
+  },
+  "b2": {
+    "recall_at_k": 0.9643,
+    "median_tokens": 70
+  },
+  "selected_mode": "B1",
+  "section_7_5_rule": "Keep B2 if B2 recall >= B1 + 0.05 OR (|B2 - B1| < 0.05 and B2 tokens <= 0.70 * B1).",
+  "cases": [
+    {
+      "case_id": "ta_01_add_sign",
+      "targets": [
+        "pkg/core.py"
+      ],
+      "b0_hit": true,
+      "b0_tokens": 133,
+      "b1_hit": true,
+      "b1_tokens": 32,
+      "b2_hit": true,
+      "b2_tokens": 32
+    },
+    {
+      "case_id": "ta_02_clamp_upper",
+      "targets": [
+        "pkg/core.py"
+      ],
+      "b0_hit": true,
+      "b0_tokens": 154,
+      "b1_hit": true,
+      "b1_tokens": 102,
+      "b2_hit": true,
+      "b2_tokens": 102
+    },
+    {
+      "case_id": "ta_03_discount_rate",
+      "targets": [
+        "pkg/core.py"
+      ],
+      "b0_hit": true,
+      "b0_tokens": 155,
+      "b1_hit": true,
+      "b1_tokens": 54,
+      "b2_hit": true,
+      "b2_tokens": 54
+    },
+    {
+      "case_id": "ta_04_factorial_base",
+      "targets": [
+        "pkg/core.py"
+      ],
+      "b0_hit": true,
+      "b0_tokens": 148,
+      "b1_hit": true,
+      "b1_tokens": 47,
+      "b2_hit": true,
+      "b2_tokens": 47
+    },
+    {
+      "case_id": "ta_05_is_palindrome",
+      "targets": [
+        "pkg/core.py"
+      ],
+      "b0_hit": true,
+      "b0_tokens": 153,
+      "b1_hit": true,
+      "b1_tokens": 52,
+      "b2_hit": true,
+      "b2_tokens": 52
+    },
+    {
+      "case_id": "ta_06_merge_counts",
+      "targets": [
+        "pkg/core.py"
+      ],
+      "b0_hit": true,
+      "b0_tokens": 174,
+      "b1_hit": true,
+      "b1_tokens": 113,
+      "b2_hit": true,
+      "b2_tokens": 113
+    },
+    {
+      "case_id": "ta_07_chunk_step",
+      "targets": [
+        "pkg/core.py"
+      ],
+      "b0_hit": true,
+      "b0_tokens": 172,
+      "b1_hit": true,
+      "b1_tokens": 111,
+      "b2_hit": true,
+      "b2_tokens": 111
+    },
+    {
+      "case_id": "ta_08_safe_divide",
+      "targets": [
+        "pkg/core.py"
+      ],
+      "b0_hit": true,
+      "b0_tokens": 150,
+      "b1_hit": true,
+      "b1_tokens": 49,
+      "b2_hit": true,
+      "b2_tokens": 49
+    },
+    {
+      "case_id": "ta_09_dedupe_order",
+      "targets": [
+        "pkg/core.py"
+      ],
+      "b0_hit": true,
+      "b0_tokens": 156,
+      "b1_hit": true,
+      "b1_tokens": 95,
+      "b2_hit": true,
+      "b2_tokens": 95
+    },
+    {
+      "case_id": "ta_10_parse_port",
+      "targets": [
+        "pkg/core.py"
+      ],
+      "b0_hit": true,
+      "b0_tokens": 143,
+      "b1_hit": true,
+      "b1_tokens": 42,
+      "b2_hit": true,
+      "b2_tokens": 42
+    },
+    {
+      "case_id": "ta_11_moving_avg",
+      "targets": [
+        "pkg/core.py"
+      ],
+      "b0_hit": true,
+      "b0_tokens": 144,
+      "b1_hit": true,
+      "b1_tokens": 43,
+      "b2_hit": true,
+      "b2_tokens": 43
+    },
+    {
+      "case_id": "ta_12_flatten_once",
+      "targets": [
+        "pkg/core.py"
+      ],
+      "b0_hit": true,
+      "b0_tokens": 171,
+      "b1_hit": true,
+      "b1_tokens": 110,
+      "b2_hit": true,
+      "b2_tokens": 110
+    },
+    {
+      "case_id": "ta_13_slugify_dash",
+      "targets": [
+        "pkg/core.py"
+      ],
+      "b0_hit": true,
+      "b0_tokens": 147,
+      "b1_hit": true,
+      "b1_tokens": 46,
+      "b2_hit": true,
+      "b2_tokens": 46
+    },
+    {
+      "case_id": "ta_14_binary_search",
+      "targets": [
+        "pkg/core.py"
+      ],
+      "b0_hit": true,
+      "b0_tokens": 203,
+      "b1_hit": true,
+      "b1_tokens": 102,
+      "b2_hit": true,
+      "b2_tokens": 102
+    },
+    {
+      "case_id": "ta_15_ruff_unused_import",
+      "targets": [
+        "pkg/util.py"
+      ],
+      "b0_hit": true,
+      "b0_tokens": 126,
+      "b1_hit": true,
+      "b1_tokens": 63,
+      "b2_hit": true,
+      "b2_tokens": 63
+    },
+    {
+      "case_id": "ta_16_ruff_unused_var",
+      "targets": [
+        "pkg/util.py"
+      ],
+      "b0_hit": true,
+      "b0_tokens": 128,
+      "b1_hit": true,
+      "b1_tokens": 105,
+      "b2_hit": true,
+      "b2_tokens": 105
+    },
+    {
+      "case_id": "ta_17_ruff_fstring",
+      "targets": [
+        "pkg/util.py"
+      ],
+      "b0_hit": true,
+      "b0_tokens": 123,
+      "b1_hit": true,
+      "b1_tokens": 60,
+      "b2_hit": true,
+      "b2_tokens": 60
+    },
+    {
+      "case_id": "ta_18_ruff_unused_json",
+      "targets": [
+        "pkg/util.py"
+      ],
+      "b0_hit": true,
+      "b0_tokens": 132,
+      "b1_hit": true,
+      "b1_tokens": 69,
+      "b2_hit": true,
+      "b2_tokens": 69
+    },
+    {
+      "case_id": "ta_19_mypy_return_type",
+      "targets": [
+        "pkg/typed.py"
+      ],
+      "b0_hit": true,
+      "b0_tokens": 130,
+      "b1_hit": true,
+      "b1_tokens": 107,
+      "b2_hit": true,
+      "b2_tokens": 107
+    },
+    {
+      "case_id": "ta_20_mypy_optional_none",
+      "targets": [
+        "pkg/typed.py"
+      ],
+      "b0_hit": true,
+      "b0_tokens": 130,
+      "b1_hit": true,
+      "b1_tokens": 67,
+      "b2_hit": true,
+      "b2_tokens": 67
+    },
+    {
+      "case_id": "ta_21_mypy_arg_type",
+      "targets": [
+        "pkg/typed.py"
+      ],
+      "b0_hit": true,
+      "b0_tokens": 134,
+      "b1_hit": true,
+      "b1_tokens": 111,
+      "b2_hit": true,
+      "b2_tokens": 111
+    },
+    {
+      "case_id": "ta_22_mypy_dict_val",
+      "targets": [
+        "pkg/typed.py"
+      ],
+      "b0_hit": true,
+      "b0_tokens": 138,
+      "b1_hit": true,
+      "b1_tokens": 115,
+      "b2_hit": true,
+      "b2_tokens": 115
+    },
+    {
+      "case_id": "ta_23_drift_rename_fn",
+      "targets": [
+        "pkg/client.py"
+      ],
+      "b0_hit": true,
+      "b0_tokens": 152,
+      "b1_hit": true,
+      "b1_tokens": 100,
+      "b2_hit": true,
+      "b2_tokens": 100
+    },
+    {
+      "case_id": "ta_24_drift_kwarg",
+      "targets": [
+        "pkg/client.py"
+      ],
+      "b0_hit": true,
+      "b0_tokens": 167,
+      "b1_hit": true,
+      "b1_tokens": 106,
+      "b2_hit": true,
+      "b2_tokens": 106
+    },
+    {
+      "case_id": "ta_25_drift_return_tuple",
+      "targets": [
+        "pkg/client.py"
+      ],
+      "b0_hit": true,
+      "b0_tokens": 173,
+      "b1_hit": true,
+      "b1_tokens": 72,
+      "b2_hit": true,
+      "b2_tokens": 72
+    },
+    {
+      "case_id": "ta_26_drift_module_move",
+      "targets": [
+        "pkg/client.py"
+      ],
+      "b0_hit": true,
+      "b0_tokens": 146,
+      "b1_hit": true,
+      "b1_tokens": 57,
+      "b2_hit": true,
+      "b2_tokens": 57
+    },
+    {
+      "case_id": "ta_27_drift_req_pin",
+      "targets": [
+        "requirements.txt"
+      ],
+      "b0_hit": true,
+      "b0_tokens": 164,
+      "b1_hit": false,
+      "b1_tokens": 59,
+      "b2_hit": false,
+      "b2_tokens": 59
+    },
+    {
+      "case_id": "ta_28_drift_default_flag",
+      "targets": [
+        "pkg/client.py"
+      ],
+      "b0_hit": true,
+      "b0_tokens": 182,
+      "b1_hit": true,
+      "b1_tokens": 142,
+      "b2_hit": true,
+      "b2_tokens": 142
+    }
+  ]
+}

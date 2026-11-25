@@ -1,0 +1,12 @@
+{
+  "key": "0f531a724af68232322fbeffae72bb6a262e31c3363710b9b1bdf17c34e21e11",
+  "case_id": "ta_13_slugify_dash",
+  "model_id": "replay-cassette-v1",
+  "parameter_hash": "a9636e1ad83fa94ab18777a9f8313c8d4c0638de56ded723343a0f922d867cc0",
+  "prompt_sha256": "53e150e665fa56d060e731e8b4a4d92e0ecfce71c9efa1fdc344d41435c425e8",
+  "response_sha256": "ff89f80f3e9a7cc66469b97496ce744d7909b48c2bd94ea53d53a6d0a111812e",
+  "raw_content": "{\"edits\":[{\"path\":\"pkg/core.py\",\"search\":\"def slugify(text: str) -> str:\\n    return '_'.join(text.lower().split())\\n\",\"replace\":\"def slugify(text: str) -> str:\\n    return '-'.join(text.lower().split())\\n\"}],\"rationale\":\"Join slug tokens with hyphen instead of underscore\"}",
+  "prompt_tokens": 320,
+  "completion_tokens": 95,
+  "recorded_at": "2026-11-25T00:00:00+00:00"
+}

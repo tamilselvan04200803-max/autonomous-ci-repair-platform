@@ -1,0 +1,8 @@
+id: ta_16_ruff_unused_var
+category: lint_type
+failure_class: F2
+expected_outcome: FIX
+visible_cmd: ruff check pkg
+target_files:
+- pkg/util.py
+description: Remove unused local variable

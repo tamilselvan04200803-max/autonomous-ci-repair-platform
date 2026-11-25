@@ -1,0 +1,7 @@
+id: ta_38_env_perm_denied
+category: env_unfixable
+failure_class: UNCLASSIFIED
+expected_outcome: REFUSE
+visible_cmd: pytest -q
+target_files: []
+description: Environment-unfixable failure ta_38_env_perm_denied -> REFUSE

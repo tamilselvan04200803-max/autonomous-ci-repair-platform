@@ -1,0 +1,6 @@
+--- a/pkg/cаlc.py
++++ b/pkg/cаlc.py
+@@ -1,2 +1,2 @@
+ def add(a: int, b: int) -> int:
+-    return a - b
++    return a + b

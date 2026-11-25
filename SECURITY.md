@@ -66,3 +66,19 @@ When deploying Aegis Forge to production:
 2. Set `FORGE_RUNNER_SECRET` and share it only with authorized runner instances.
 3. Configure `FORGE_SIGNING_KEY` via a hardware security module (HSM) or cloud secret manager (AWS Secrets Manager, GCP Secret Manager, HashiCorp Vault).
 4. Terminate TLS with HSTS enabled and enforce HTTPS.
+
+---
+
+## Aegis-CI Control Plane Threat Model & Honest Limits
+
+Aegis-CI follows the **Rule of Two**: never combine untrusted input, secret/credential access, and external state mutation inside a single component:
+
+- **Untrusted Inputs**: CI logs, source files, commit messages, and PR bodies are treated as untrusted data. Logs are ANSI-stripped, token-redacted, truncated, and wrapped before LLM consumption (`aegis/triage/redactor.py`).
+- **LLM Repair Adapter**: Has zero shell access, zero tool access, and zero repository write capability; outputs must match a strict schema and pass `git apply --check`.
+- **Sandbox Isolation**: Untrusted repository code executes in `AegisSandboxRunner` / `agentsentinel.sandbox.HardenedContainerRunner` with `--network=none` in the run phase, read-only rootfs + tmpfs, non-root user `65534:65534`, `--cap-drop=ALL`, `--security-opt=no-new-privileges`, PIDs/memory/CPU limits, and tar-streamed workspaces (no Windows bind mounts).
+- **Write Token Isolation**: GitHub App installation tokens reside only in `GitHubClient` / `Deliverer`, gated behind `PolicyGate` (`P1..P8`), `RefWriteGuard` (`refs/heads/aegis/*` only), `AEGIS_ENABLED` kill switch, and loop guards (`aegis/*` branches, self-actor, fork PRs skipped).
+- **Honest Limits**:
+  - Docker containers share the host kernel and are not a VM boundary; run on isolated dev/CI hosts without valuable host secrets and only against owned repositories.
+  - Public webhook relays (e.g., Smee) must only be used with throwaway test repositories.
+  - When Docker daemon is unavailable on a host, benchmark replay runs in `local-subprocess` mode and reports that execution backend explicitly in `benchmarks/results/tier_a_replay.json`.
+

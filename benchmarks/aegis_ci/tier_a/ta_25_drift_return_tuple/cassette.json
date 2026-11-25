@@ -1,0 +1,12 @@
+{
+  "key": "7c593671386b4ba57592ae7b5e3d5192de8be9db39d8c65a7ce8eecdbfcbe966",
+  "case_id": "ta_25_drift_return_tuple",
+  "model_id": "replay-cassette-v1",
+  "parameter_hash": "a9636e1ad83fa94ab18777a9f8313c8d4c0638de56ded723343a0f922d867cc0",
+  "prompt_sha256": "a12bdf9e1ba4c773f44a6b06c6ad8bd229753d4f7ffe1d3b569501884cf038ec",
+  "response_sha256": "c75c3bcd754a003786140315b0377b5ba56d28197fc976f335237595551dfa5e",
+  "raw_content": "{\"edits\":[{\"path\":\"pkg/client.py\",\"search\":\"from vendor_sdk import split_pair\\n\\ndef left(s: str) -> str:\\n    head, _mid, _tail = split_pair(s)\\n    return head\\n\",\"replace\":\"from vendor_sdk import split_pair\\n\\ndef left(s: str) -> str:\\n    head, _tail = split_pair(s)\\n    return head\\n\"}],\"rationale\":\"Unpack 2-tuple from vendor_sdk.split_pair\"}",
+  "prompt_tokens": 320,
+  "completion_tokens": 95,
+  "recorded_at": "2026-11-25T00:00:00+00:00"
+}

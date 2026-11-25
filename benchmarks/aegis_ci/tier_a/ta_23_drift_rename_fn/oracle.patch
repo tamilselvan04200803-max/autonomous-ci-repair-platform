@@ -1,0 +1,9 @@
+--- a/pkg/client.py
++++ b/pkg/client.py
+@@ -1,4 +1,4 @@
+-from vendor_sdk import compute
++from vendor_sdk import evaluate
+ 
+ def run(x: int) -> int:
+-    return compute(x)
++    return evaluate(x)

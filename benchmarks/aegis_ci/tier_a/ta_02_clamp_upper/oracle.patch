@@ -1,0 +1,9 @@
+--- a/pkg/core.py
++++ b/pkg/core.py
+@@ -2,5 +2,5 @@
+     if x < lo:
+         return lo
+     if x > hi:
+-        return lo
++        return hi
+     return x

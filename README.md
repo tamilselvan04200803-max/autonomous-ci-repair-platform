@@ -216,6 +216,20 @@ npm run build                    # Next.js production build verification
 ./scripts/e2e-local.sh           # full loop against a local server
 ```
 
+## Aegis-CI Python Control Plane
+
+The Python control plane (`aegis/`) pairs with the `agentsentinel` verification kernel to provide deterministic triage (`pytest`, `ruff`, `mypy`, `pip`, `k`-rerun flake detection), two-phase sandboxed reproduction, AST code graph + read-only MCP v2 server, YAML-configured Policy Gate (`P1..P8`), guarded GitHub delivery (`refs/heads/aegis/*`), and replayable Tier A + Adversarial benchmarks.
+
+- Architecture & generated benchmark tables: [`docs/AEGIS_CI.md`](docs/AEGIS_CI.md)
+- Machine-readable replay results: [`benchmarks/results/tier_a_replay.json`](benchmarks/results/tier_a_replay.json)
+- Claims & verification commands: [`CLAIMS.md`](CLAIMS.md)
+- Threat model & honest limits: [`SECURITY.md`](SECURITY.md)
+
+```bash
+make bench-replay                # validate 42 Tier A + 13 Adversarial cases & regenerate report
+make verify                      # ruff, mypy --strict, pytest, secret scan
+```
+
 ## Contributing
 
 We welcome contributions! Please review [CONTRIBUTING.md](CONTRIBUTING.md) and our [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md). New failure signatures and parsers in `src/lib/analyze.ts` are especially valuable.

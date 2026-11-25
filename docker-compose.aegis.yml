@@ -1,0 +1,18 @@
+services:
+  aegis-control-plane:
+    build:
+      context: .
+      dockerfile: Dockerfile.aegis
+    environment:
+      - AEGIS_ENABLED=${AEGIS_ENABLED:-1}
+      - PYTHONDONTWRITEBYTECODE=1
+    ports:
+      - "8080:8080"
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    command: ["python", "-B", "-m", "aegis.cli", "bench", "--replay"]

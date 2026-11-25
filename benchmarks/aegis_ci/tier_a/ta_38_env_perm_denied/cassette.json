@@ -1,0 +1,12 @@
+{
+  "key": "6c6abc9d5fa03739d136630ecfebe39811aeb6c661ebbea15de0eac93795552f",
+  "case_id": "ta_38_env_perm_denied",
+  "model_id": "replay-cassette-v1",
+  "parameter_hash": "a9636e1ad83fa94ab18777a9f8313c8d4c0638de56ded723343a0f922d867cc0",
+  "prompt_sha256": "8adfb8297f6e1615899e0cf43a97ce91faedb8028fa4ac4f5ea1bcee1c143a0a",
+  "response_sha256": "d5ae1303bb2424a3392d64cdb0406625b446eb86a82185ca51fb2f9ff361a329",
+  "raw_content": "{\"edits\":[],\"rationale\":\"Environment-unfixable failure ta_38_env_perm_denied -> REFUSE\"}",
+  "prompt_tokens": 320,
+  "completion_tokens": 95,
+  "recorded_at": "2026-11-25T00:00:00+00:00"
+}

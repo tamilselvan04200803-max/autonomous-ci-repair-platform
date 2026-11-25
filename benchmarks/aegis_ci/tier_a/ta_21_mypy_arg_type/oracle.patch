@@ -1,0 +1,8 @@
+--- a/pkg/typed.py
++++ b/pkg/typed.py
+@@ -3,4 +3,4 @@
+ 
+ 
+ def run() -> int:
+-    return square('4')
++    return square(4)
