@@ -79,6 +79,10 @@ warn_unused_ignores = true
 files = ["aegis"]
 ignore_missing_imports = false
 
+[[tool.mypy.overrides]]
+module = ["agentsentinel.*"]
+ignore_missing_imports = true
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = ["test_*.py"]
@@ -87,6 +91,7 @@ addopts = [
     "--tb=short",
     "-v",
     "--import-mode=importlib",
+    "--basetemp=.pytest_tmp",
 ]
 markers = [
     "contract: API/SDK version contract tests against pinned libraries",

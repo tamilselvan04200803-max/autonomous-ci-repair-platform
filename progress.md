@@ -39,12 +39,12 @@
 - [x] Verify baseline gates: `ruff`, `mypy --strict`, `pytest`, and existing `npm test` / `npm run bench`
 
 ### Milestone A1 — Domain Model & Hash-Chained Event Log
-- [ ] Write `tests/contracts/test_pydantic_v2_contract.py` (frozen, `model_validate_json`, `model_dump(mode="json")`)
-- [ ] Create `aegis/__init__.py` & `aegis/domain/models.py` (`RunState`, `FailureClass`, `FailureEvent`, `Diagnosis`, `ContextManifest`, `SearchReplaceEdit`, `Patch`, `VerificationReport`, `PolicyDecision`, `LLMCallRecord`, `ToolVersions`, `EvidenceBundle`)
-- [ ] Enforce unidirectional import invariant test (`agentsentinel` never imported backwards or mutated; `aegis` -> `agentsentinel`)
-- [ ] Write failing TDD tests `tests/unit/test_a1_domain_and_chain.py` (chain tamper detection per-byte on payload/seq/prev_hash/hash, subprocess kill-9 mid-run & resume from checkpoint, JSON bundle round-trip)
-- [ ] Implement `aegis/ledger/store.py` (SQLite WAL, `runs`, hash-chained `events` table using canonical JCS JSON, `verify_chain(run_id)`, `export_bundle_json`, checkpoint resume)
-- [ ] Run ruff, `mypy --strict`, pytest & verify all A1 acceptance criteria pass
+- [x] Write `tests/contracts/test_pydantic_v2_contract.py` (frozen, `model_validate_json`, `model_dump(mode="json")`)
+- [x] Create `aegis/__init__.py` & `aegis/domain/models.py` (`RunState`, `FailureClass`, `FailureEvent`, `Diagnosis`, `ContextManifest`, `SearchReplaceEdit`, `Patch`, `VerificationReport`, `PolicyDecision`, `LLMCallRecord`, `ToolVersions`, `EvidenceBundle`)
+- [x] Enforce unidirectional import invariant test (`agentsentinel` never imported backwards or mutated; `aegis` -> `agentsentinel`)
+- [x] Write failing TDD tests `tests/unit/test_a1_domain_and_chain.py` (chain tamper detection per-byte on payload/seq/prev_hash/hash, subprocess kill-9 mid-run & resume from checkpoint, JSON bundle round-trip)
+- [x] Implement `aegis/ledger/store.py` (SQLite WAL, `runs`, hash-chained `events` table using canonical JCS JSON, `verify_chain(run_id)`, `export_bundle_json`, checkpoint resume)
+- [x] Run ruff, `mypy --strict`, pytest & verify all A1 acceptance criteria pass
 
 ### Milestone A2 — GitHub Webhook Ingest & App Client
 - [ ] Write `tests/contracts/test_fastapi_contract.py`, `tests/contracts/test_pyjwt_contract.py`, `tests/contracts/test_httpx_contract.py` (with docs URLs)

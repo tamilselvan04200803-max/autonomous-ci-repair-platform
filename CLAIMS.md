@@ -4,7 +4,7 @@ Every quantitative or security claim published in `README.md` or documentation m
 
 | Claim ID | Statement | Artifact / Source | Verification Command | Status |
 |---|---|---|---|---|
-| `C1` | Event log detects any 1-byte tampering via SHA-256 hash chain | `aegis/ledger/store.py` | `.\.venv\Scripts\python.exe -B -m pytest tests/unit/test_a1_domain_and_chain.py` | Pending (A1) |
+| `C1` | Event log detects any 1-byte tampering via SHA-256 hash chain | `aegis/ledger/store.py` | `.\.venv\Scripts\python.exe -B -m pytest tests/unit/test_a1_domain_and_chain.py` | Verified (6/6 tests pass incl. contract) |
 | `C2` | GitHub `/webhook` verifies HMAC-SHA256 on raw bytes before parsing and rejects invalid/fork/loop events | `aegis/ingest/webhook.py` | `.\.venv\Scripts\python.exe -B -m pytest tests/unit/test_a2_ingest_and_github.py` | Pending (A2) |
 | `C3` | Deterministic triage classifies pytest/ruff/mypy/pip across >=60 real-format logs with unknown -> `UNCLASSIFIED` | `aegis/triage/parsers.py`, `tests/fixtures/triage_corpus/` | `.\.venv\Scripts\python.exe -B -m pytest tests/unit/test_a3_triage_and_redactor.py` | Pending (A3) |
 | `C4` | Two-phase sandbox enforces `--network=none`, `--read-only`, `--cap-drop=ALL`, non-root `65534:65534`, tar-stream delivery | `aegis/sandbox/runner.py`, `aegis/sandbox/tar_stream.py` | `.\.venv\Scripts\python.exe -B -m pytest tests/unit/test_a4_sandbox.py` | Pending (A4) |
